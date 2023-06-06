@@ -1,0 +1,321 @@
+*, *::before, *::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.35;
+    color: inherit;
+}
+
+/* Variables */
+*, *::before, *::after {
+    --accent-color: #fd857a;
+    --text-color: #e4dfdc;
+    --input-bg-color: #140f0c;
+    --bg-color: #241f1c;
+    --muted-color: #948f8c;
+    --standout-color: #342f2c;
+    --link-color: #78affe;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content 1fr;
+    min-height: 100vh;
+    padding-bottom: 2vh;
+}
+
+nav {
+    width: 100%;
+    background-color: var(--standout-color);
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+nav > a {
+    text-decoration: none;
+    color: var(--accent-color);
+    background-color: transparent;
+    border-bottom: .1rem solid var(--accent-color);
+    padding: .25rem .5rem;
+    margin: .5rem 1rem;
+    width: max-content;
+    transition: background-color .3s, color .3s;
+}
+
+nav > a:hover {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100%;
+    padding: 2vh 2vmin;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+header img {
+    width: min(20ch, 60%);
+    margin-bottom: 1rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin: auto 2rem;
+}
+
+p {
+    max-width: min(80ch, 100%);
+}
+
+p + p {
+    margin-top: 1rem;
+}
+
+a {
+    color: var(--link-color);
+}
+
+.muted {
+    color: var(--muted-color);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: min(90ch, 90vw);
+}
+
+form > * {
+    margin: 1em 0;
+}
+
+form input, form select, form textarea {
+    font-size: .85rem;
+    padding: .5rem;
+    background-color: var(--input-bg-color);
+    border: .1rem solid var(--muted-color);
+    border-radius: .5rem;
+    transition: border-color .3s;
+}
+
+form input:hover, form select:hover, form textarea:hover {
+    border-color: var(--accent-color);
+}
+
+form input:focus, form input:active, form select:focus, form select:active, form textarea:focus, form textarea:active {
+    border-color: var(--accent-color);
+    outline: .1rem solid var(--accent-color);
+}
+
+form input[type="submit"] {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    cursor: pointer;
+    padding: .5rem 3rem;
+    font-size: 1rem;
+}
+
+.select-switch-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.select-switch {
+    height: 0;
+    width: 0;
+    opacity: 0;
+    position: absolute;
+}
+
+.select-switch + label {
+    background-color: var(--input-bg-color);
+    border: .1rem solid var(--muted-color);
+    border-radius: .5rem;
+    padding: .5rem 1rem;
+    margin: .5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.select-switch:focus + label, .select-switch:active + label, .select-switch:hover + label  {
+    outline: .1rem solid var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.select-switch:checked + label {
+    color: var(--bg-color);
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.text-inputs {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    place-items: center start;
+    width: min(60ch, 100%);
+}
+
+.text-inputs label {
+    grid-column: 1;
+    margin: 1rem;
+}
+
+.text-inputs input, .text-inputs select {
+    grid-column: 2;
+    height: fit-content;
+    width: 100%;
+}
+
+#search-results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.item {
+    background-color: var(--standout-color);
+    width: min(75ch, 90%);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+.item.single-view {
+    width: min(120ch, 90%);
+}
+
+.item h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.item img {
+    width: min(24ch, 60%);
+}
+
+.keyword {
+    display: inline-block;
+    color: var(--bg-color);
+    background-color: var(--muted-color);
+    margin: 0 .25rem;
+    padding: .15rem .5rem;
+    border-radius: .25rem;
+}
+
+table {
+    margin: 1rem 0;
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-collapse: collapse;
+}
+
+table tbody {
+    display: table;
+    width: 100%;
+}
+
+tr {
+    background-color: var(--bg-color);
+}
+
+tr:nth-child(even) {
+    background-color: var(--standout-color);
+}
+
+td {
+    vertical-align: middle;
+    padding: .25rem 1rem;
+    border: 1px solid var(--muted-color);
+}
+
+td:first-child {
+    font-weight: bold;
+}
+
+section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    border: .1rem solid var(--standout-color);
+    width: 90%;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+section > h1 {
+    width: 100%;
+    text-align: center;
+}
+
+section > form {
+    background-color: var(--standout-color);
+    width: min(75ch, 90%);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+.log, .keywords {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    place-items: center start;
+    border: .1rem solid var(--standout-color);
+    width: 90%;
+    padding: 2rem;
+    border-radius: .5rem;
+    overflow-x: auto;
+}
+
+.log > *, .keywords > * {
+    margin: auto 0;
+    padding: .5rem;
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid var(--standout-color);
+}
+
+.log > .timestamp, .keywords > .type {
+    grid-column: 1;
+    color: var(--muted-color);
+}
+
+.log > .prefix, .keywords > .word {
+    grid-column: 2;
+    color: var(--accent-color)
+}
+
+.log > .message, .keywords > .description {
+    grid-column: 3;
+    min-width: 100%;
+}
+
+.log .info {
+    grid-column: 1 / 4;
+    border-bottom: 0 none transparent;
+}

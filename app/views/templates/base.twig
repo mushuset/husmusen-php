@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/fonts.css">
+    {% block head %}
+        <title>Husmusen</title>
+    {% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="/app">Sök</a>
+        <a href="/app/db_info">Om museet</a>
+        <a href="/app/about">Om Husmusen</a>
+        <a href="/app/login">Kontrollpanel</a>
+    </nav>
+    <main>
+        {% block body %}
+            <p>Hello World!</p>
+        {% endblock %}
+    </main>
+</body>
+</html>
