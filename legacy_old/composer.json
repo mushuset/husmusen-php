@@ -1,9 +1,0 @@
-{
-    "name": "mushuset/husmusen-php",
-    "description": "Husmusen, but written in PHP.",
-    "type": "project",
-    "license": "BSD 4-Clause License",
-    "require": {
-        "vlucas/phpdotenv": "^5.5"
-    }
-}
