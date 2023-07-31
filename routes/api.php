@@ -20,9 +20,10 @@ use Illuminate\Support\Facades\Route;
  * NOTE: Every route in this file is automatically mounted under `/api`!
  */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// KEEP THIS FOR REFERENCE.
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 /*
  * PUBLIC ROUTES
@@ -64,22 +65,34 @@ Route::get('/1.0.0/item/search', function (Request $request) {
     $freetext = $request->query('freetext', '');
     $keywords = $request->query('keywords', '');
     $keyword_mode = $request->query('keyword-mode', 'OR');
-    $orderBy = $request->query('sort', 'name');
+    $order_by = $request->query('sort', 'name');
     $reverse = $request->query('reverse', 'false');
+
+    $types_as_array = preg_split('/,/', $types);
 
     /**
      * This formula figures out if the results should be reversed or not.
      * The complexity is needed because the 'relevance' search option works
      * the other way around compared to all other sorting otions.
      */
-    $shouldReverseOrder = $orderBy == 'relevance'
+    $should_reverse_order = $order_by == 'relevance'
         ? ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'ASC' : 'DESC')
         : ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'DESC' : 'ASC');
+
+    echo 'types: ' . $types . "\n";
+    echo 'freetext: ' . $freetext . "\n";
+    echo 'keywords: ' . $keywords . "\n";
+    echo 'keyword_mode: ' . $keyword_mode . "\n";
+    echo 'order_by: ' . $order_by . "\n";
+    echo 'reverse: ' . $reverse . "\n";
+    echo 'types_as_array: ' . implode(', ', $types_as_array) . "\n";
+    echo 'should_reverse_order: ' . $should_reverse_order;
 
     $items = DB::table('husmusen_items')
         ->orWhereFullText('name', $freetext)
         ->orWhereFullText('description', $freetext)
-        ->orderBy($orderBy, $shouldReverseOrder)
+        ->whereIn('type', $types_as_array)
+        ->orderBy($order_by, $should_reverse_order)
         ->get();
 
     return $items;

@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\HusmusenItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,13 +17,71 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Redirect::to('/app');
 });
 
-Route::get('/hello-world', function () {
-    return 'Hello world!';
+Route::get('/app', function (Request $request) {
+    $queries = $request->query();
+    return view('landing', ['queries' => $queries]);
 });
 
-Route::get('/all-items', function () {
-    return HusmusenItem::all()->map(function ($item) { return $item->name; });
+Route::get('/app/search', function (Request $request) {
+    $queries = $request->query();
+    return view('search', ['queries' => $queries]);
 });
+
+Route::get('/app/item/{id}', function () {
+    return view('item');
+});
+
+Route::get('/app/file/{id}', function () {
+    return view('file');
+});
+
+Route::get('/app/keywords', function () {
+    return view('keywords');
+});
+
+Route::get('/app/db_info', function () {
+    return view('db_info');
+});
+
+Route::get('/app/about', function () {
+    return view('about');
+});
+
+Route::get('/app/login', function () {
+    return view('login');
+});
+
+Route::get('/app/control_panel', function () {
+    return view('control_panel.index');
+});
+
+Route::get('/app/control_panel/new_item', function () {
+    return view('control_panel.new_item');
+});
+
+Route::get('/app/control_panel/edit_item', function () {
+    return view('control_panel.edit_item');
+});
+
+Route::get('/app/control_panel/edit_file', function () {
+    return view('control_panel.edit_file');
+});
+
+Route::get('/app/control_panel/edit_keywords', function () {
+    return view('control_panel.edit_keywords');
+});
+
+Route::get('/app/control_panel/log', function () {
+    return view('control_panel.log');
+});
+
+// FIXME: This should be read from an environment variable!
+$DEBUG = false;
+if ($DEBUG == true) {
+    Route::get('/app/setup', function () {
+        return view('item');
+    });
+}
