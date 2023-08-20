@@ -21,6 +21,9 @@ form.addEventListener(
             {
                 body: requestPayload,
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
             }
         )
             // Handle the response.

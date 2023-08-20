@@ -26,6 +26,11 @@ class HusmusenFile extends Model
     // This is necessary only when the primary key is something other than 'id'.
     protected $primaryKey = 'fileID';
 
+    protected $keyType = 'UUID';
+
+    // Indicates that the primary key is NOT an integer that should be auto-incremented.
+    public $incrementing = false;
+
     // Define the name of the columns that handles creation time.
     const CREATED_AT = 'addedAt';
 

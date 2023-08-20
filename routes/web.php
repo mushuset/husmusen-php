@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\HusmusenDBInfo;
+use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -30,12 +32,31 @@ Route::get('/app/search', function (Request $request) {
     return view('search', ['queries' => $queries]);
 });
 
-Route::get('/app/item/{id}', function () {
-    return view('item');
+// TODO: Also search for files related to the item.
+Route::get('/app/item/{id}', function (string $id) {
+    // Make sure the ID is valid; only consisting of numbers.
+    if (!preg_match('/^\d+$/', $id)) {
+        return view('item', ['err' => 'Invalid ID!']);
+    }
+
+    // Search for the item in the database.
+    $item = HusmusenItem::find($id);
+
+    // Check if the item doesn't exist.
+    if ($item == null) {
+        return view('item', ['err' => 'Item not found!']);
+    }
+
+    // Convert the JSON data into associative arrays.
+    $item->itemData = json_decode($item->itemData);
+    $item->customData = json_decode($item->customData);
+
+    return view('item', ['item' => $item]);
 });
 
-Route::get('/app/file/{id}', function () {
-    return view('file');
+Route::get('/app/file/{id}', function (string $id) {
+    $file = HusmusenFile::find($id);
+    return view('file', ['file' => $file]);
 });
 
 Route::get('/app/keywords', function () {
@@ -43,7 +64,8 @@ Route::get('/app/keywords', function () {
 });
 
 Route::get('/app/db_info', function () {
-    return view('db_info');
+    $db_info = HusmusenDBInfo::Default();
+    return view('db_info', ['db_info' => $db_info]);
 });
 
 Route::get('/app/about', function () {

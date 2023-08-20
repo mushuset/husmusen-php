@@ -12,8 +12,8 @@
 <table>
     @foreach($db_info->museumDetails as $field => $value)
     <tr>
-        <td>{{ field }}</td>
-        <td>{{ value }}</td>
+        <td>{{ $field }}</td>
+        <td>{{ $value }}</td>
     </tr>
     @endforeach
 </table>
@@ -22,8 +22,8 @@
     @foreach($db_info as $field => $value)
     @unless($field == 'museumDetails')
     <tr>
-        <td>{{ field }}</td>
-        <td>{{ value }}</td>
+        <td>{{ $field }}</td>
+        <td>{{ is_array($value) ? implode(',', $value) : $value }}</td>
     </tr>
     @endunless
     @endforeach

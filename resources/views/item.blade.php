@@ -17,7 +17,7 @@
     <p>
         Nyckelord:
         @foreach(preg_split('/,/', $item->keywords) as $key => $keyword)
-        <span class="keyword">{{ keyword }}</span>
+        <span class="keyword">{{ $keyword }}</span>
         @endforeach
     </p>
     <p>Tillagd: {{ $item->addedAt }}</p>
@@ -25,8 +25,8 @@
     <table class="item-data">
         @foreach($item->itemData as $field => $value)
         <tr>
-            <td>{{ field }}</td>
-            <td>{{ value }}</td>
+            <td>{{ $field }}</td>
+            <td>{{ $value }}</td>
         </tr>
         @endforeach
     </table>

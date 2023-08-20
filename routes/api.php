@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\HusmusenDBInfo;
+use App\Models\HusmusenError;
 use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
+use App\Models\HusmusenUser;
+use Illuminate\Hashing\Argon2IdHasher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,35 +33,26 @@ use Illuminate\Support\Facades\Route;
  * PUBLIC ROUTES
  */
 
-// TODO: This should *NOT* be hard-coded!
+// TODO: This should load from a file instead!
+// FIXME: For some reason, this does not work...
 Route::get('/db_info', function () {
-    return [
-        'protocolVersion' => '1.0.0',
-        'protocolVersions' => ['1.0.0', '0.8.0'],
-        'supportedInputFormats' => ['YAML', 'JSON'],
-        'supportedOutputFormats' => ['YAML', 'JSON'],
-        'instanceName' => 'Husmusen på Museum',
-        'museumDetails' => [
-            'name' => 'Museum',
-            'description' => 'Ett helt vanligt museum.',
-            'address' => 'Gatanvägen 4',
-            'location' => 'Kungshamn',
-            'coordinates' => '0°0′0″ N, 25°0′0″ W',
-            'website' => 'https://example.com'
-        ]
-    ];
+    $db_info = HusmusenDBInfo::Default();
+    return $db_info;
 });
 
-// TODO: This should *NOT* be hard-coded!
+// TODO: This should load from a file instead!
 Route::get('/db_info/version', function () {
-    return '1.0.0';
+    $db_info = HusmusenDBInfo::Default();
+    return $db_info->protocolVersion;
 });
 
-// TODO: This should *NOT* be hard-coded!
+// TODO: This should load from a file instead!
 Route::get('/db_info/versions', function () {
-    return '1.0.0';
+    $db_info = HusmusenDBInfo::Default();
+    return implode(',', $db_info->protocolVersions);
 });
 
+// FIXME: This isn't really working, and I am taking a break from it.
 Route::get('/1.0.0/item/search', function (Request $request) {
     $VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
 
@@ -78,15 +73,6 @@ Route::get('/1.0.0/item/search', function (Request $request) {
     $should_reverse_order = $order_by == 'relevance'
         ? ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'ASC' : 'DESC')
         : ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'DESC' : 'ASC');
-
-    echo 'types: ' . $types . "\n";
-    echo 'freetext: ' . $freetext . "\n";
-    echo 'keywords: ' . $keywords . "\n";
-    echo 'keyword_mode: ' . $keyword_mode . "\n";
-    echo 'order_by: ' . $order_by . "\n";
-    echo 'reverse: ' . $reverse . "\n";
-    echo 'types_as_array: ' . implode(', ', $types_as_array) . "\n";
-    echo 'should_reverse_order: ' . $should_reverse_order;
 
     $items = DB::table('husmusen_items')
         ->orWhereFullText('name', $freetext)
@@ -118,7 +104,41 @@ Route::get('/1.0.0/keyword', function () {
 /*
  * LOG IN / AUTH SYSTEM
  */
-Route::post('/auth/login');
+Route::post('/auth/login', function (Request $request) {
+    $username = $request->input('username');
+    $password = $request->input('password');
+
+    if (!$username) {
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+    }
+
+    if (!$password) {
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+    }
+
+    $user = HusmusenUser::find($username);
+
+    if (!$user) {
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'There was an error looking up the user!');
+    }
+
+    $argon2 = new Argon2IdHasher();
+    $pass_is_valid = $argon2->check($password, $user->password);
+
+    if (!$pass_is_valid) {
+        return HusmusenError::SendError(400, 'ERR_INVALID_PASSWORD', 'Incorrect password.');
+    }
+
+    // 4 hours in the future.
+    $valid_until = time() + 14400;
+    $token = HusmusenUser::get_token($user, $valid_until);
+
+    return response()->json([
+        'token' => $token,
+        'validUntil' => date('c', $valid_until)  // Fromat date as per ISO 8601.
+    ]);
+});
+
 Route::post('/auth/who');
 Route::post('/auth/new');
 Route::post('/auth/change_password');
