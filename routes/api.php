@@ -119,7 +119,7 @@ Route::post('/auth/login', function (Request $request) {
     $user = HusmusenUser::find($username);
 
     if (!$user) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'There was an error looking up the user!');
+        return HusmusenError::SendError(500, 'ERR_USER_NOT_FOUND', 'There was an error looking up the user!');
     }
 
     $argon2 = new Argon2IdHasher();
@@ -144,9 +144,33 @@ Route::post('/auth/new');
 Route::post('/auth/change_password');
 
 // TODO: Get this from an environment variable instead!
+// IMPORTANT: This route should **only** be accessible in a debug mode -- else it could have destructive consequences!
 $IS_DEBUG_MODE = false;
 if ($IS_DEBUG_MODE) {
-    Route::post('/api/auth/debug_admin_creation');
+    Route::post('/api/auth/debug_admin_creation', function (Request $request) {
+        $username = $request->input('username');
+        $password = $request->input('password');
+
+        if (!$username) {
+            return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+        }
+
+        if (!$password) {
+            return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+        }
+
+        $user = HusmusenUser::find($username);
+
+        if ($user) {
+            return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
+        }
+
+        HusmusenUser::create([
+            'username' => $username,
+            'password' => $password,
+            'isAdmin' => true,
+        ]);
+    });
 }
 
 /*
