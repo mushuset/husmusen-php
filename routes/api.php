@@ -10,15 +10,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+ * |--------------------------------------------------------------------------
+ * | API Routes
+ * |--------------------------------------------------------------------------
+ * |
+ * | Here is where you can register API routes for your application. These
+ * | routes are loaded by the RouteServiceProvider and all of them will
+ * | be assigned to the "api" middleware group. Make something great!
+ * |
+ */
 
 /*
  * NOTE: Every route in this file is automatically mounted under `/api`!
@@ -53,8 +53,7 @@ Route::get('/db_info/versions', function () {
 
 // FIXME: This isn't really working, and I am taking a break from it.
 Route::get('/1.0.0/item/search', function (Request $request) {
-    $VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
-
+    // Get all the parameters from the request.
     $types = $request->query('types', '');
     $freetext = $request->query('freetext', '');
     $keywords = $request->query('keywords', '');
@@ -62,7 +61,34 @@ Route::get('/1.0.0/item/search', function (Request $request) {
     $order_by = $request->query('sort', 'name');
     $reverse = $request->query('reverse', 'false');
 
-    $types_as_array = preg_split('/,/', $types);
+    // Filter for only valid types.
+    $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);  // Make sure `types` isn't an array already, before splitting it into one.
+    $types_valid = array_filter($types_as_array, function ($k, $v) {
+        return in_array($v, HusmusenItem::$valid_types);
+    }, ARRAY_FILTER_USE_BOTH);
+
+    // Make sure `keyword_mode` is not an array.
+    $keyword_mode_as_string = is_array($keyword_mode) ? end($keyword_mode) : $keyword_mode;
+    // Make sure it is 'AND' or 'OR'.
+    $keyword_mode_sane = $keyword_mode_as_string == 'AND' ? 'AND' : 'OR';
+
+    $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);  // Make sure `keyword` isn't an array already, before splitting it into one.
+    // TODO: Validate the keywords.
+    $valid_keywords = $keywords_as_array;
+
+    // Create keyword SQL; slightly magical. :|
+    $keyword_search_sql = $keyword_mode === 'AND'
+        // If in "AND-mode", use this magic RegEx created here:
+        // This also requires the keywords to be sorted alphabetically.
+        ? ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . implode('(.*,|)', $valid_keywords) . ')(?=,|$)\'' : '')
+        // Otherwise, use "OR-mode" with this magic RegEx:
+        : ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . implode('|', $valid_keywords) . ')(?=,|$)\'' : '');
+
+    $VALID_SORT_FIELDS = array('name', 'relevance', 'lastUpdated', 'addedAt', 'itemID');
+    // Make sure `order_by` is not an array.
+    $order_by_as_string = is_array($order_by) ? end($order_by) : $order_by;
+    // Make sure it is 'AND' or 'OR'.
+    $order_by_sane = in_array($order_by_as_string, $VALID_SORT_FIELDS) ? $order_by_as_string : 'name';
 
     /**
      * This formula figures out if the results should be reversed or not.
@@ -73,14 +99,30 @@ Route::get('/1.0.0/item/search', function (Request $request) {
         ? ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'ASC' : 'DESC')
         : ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'DESC' : 'ASC');
 
-    $items = DB::table('husmusen_items')
-        ->orWhereFullText('name', $freetext)
-        ->orWhereFullText('description', $freetext)
-        ->whereIn('type', $types_as_array)
-        ->orderBy($order_by, $should_reverse_order)
-        ->get();
+    $magic_relevance_sql = '((MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST(:freetext IN BOOLEAN MODE) + 1) - 1) / 3';
+    $magic_relevance_search_sql = $freetext != null ? 'AND (MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) OR MATCH(description) AGAINST(:freetext IN BOOLEAN MODE))' : '';
 
-    return $items;
+    // Create a SQL squery.
+    $query = DB::table('husmusen_items')
+        // Add relevance
+        ->select('*', DB::raw("{$magic_relevance_sql} AS relevance"), [':freetext' => $freetext])
+        ->whereIn('type', $types_valid);
+
+    // Add the keyword search if necessary
+    if (!empty($keyword_search_sql)) {
+        $query->whereRaw($keyword_search_sql);
+    }
+
+    // Add the magic relevance search if necessary
+    if (!empty($magic_relevance_search_sql)) {
+        $query->whereRaw($magic_relevance_search_sql, [':freetext' => $freetext]);
+    }
+
+    // Sort and order the results
+    $query->orderBy($order_by_sane, $should_reverse_order);
+
+    // Execute the query and get the results
+    return $query->get();
 });
 
 Route::get('/1.0.0/item/info/{id}', function (string $id) {

@@ -67,4 +67,28 @@ class HusmusenItem extends Model
 
     // Define the name of the columns that handles modification time.
     const UPDATED_AT = 'updatedAt';
+
+    public static $valid_types = array(
+        'ArtPiece',
+        'Blueprint',
+        'Book',
+        'Building',
+        'Collection',
+        'Concept',
+        'CulturalEnvironment',
+        'CulturalHeritage',
+        'Document',
+        'Exhibition',
+        'Film',
+        'Group',
+        'HistoricalEvent',
+        'InteractiveResource',
+        'PhysicalItem',
+        'Map',
+        'Organisation',
+        'Person',
+        'Photo',
+        'Sketch',
+        'Sound'
+    );
 }
