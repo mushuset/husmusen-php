@@ -48,7 +48,7 @@ Route::get('/db_info/version', function () {
 // TODO: This should load from a file instead!
 Route::get('/db_info/versions', function () {
     $db_info = HusmusenDBInfo::Default();
-    return implode(',', $db_info->protocolVersions);
+    return join(',', $db_info->protocolVersions);
 });
 
 // FIXME: This isn't really working, and I am taking a break from it.
@@ -66,7 +66,7 @@ Route::get('/1.0.0/item/search', function (Request $request) {
     $valid_types = array_filter($types_as_array, function ($type) {
         return in_array($type, HusmusenItem::$valid_types);
     });
-    $types_sql = "('" . implode("','", sizeof($valid_types) != 0 ? $valid_types : HusmusenItem::$valid_types) . "')";
+    $types_sql = "('" . join("','", sizeof($valid_types) != 0 ? $valid_types : HusmusenItem::$valid_types) . "')";
 
     // Make sure `keyword_mode` is not an array.
     $keyword_mode_as_string = is_array($keyword_mode) ? end($keyword_mode) : $keyword_mode;
@@ -83,9 +83,9 @@ Route::get('/1.0.0/item/search', function (Request $request) {
     $keyword_search_sql = $keyword_mode === 'AND'
         // If in "AND-mode", use this magic RegEx created here:
         // This also requires the keywords to be sorted alphabetically.
-        ? ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . implode('(.*,|)', $valid_keywords) . ')(?=,|$)\'' : '')
+        ? ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . join('(.*,|)', $valid_keywords) . ')(?=,|$)\'' : '')
         // Otherwise, use "OR-mode" with this magic RegEx:
-        : ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . implode('|', $valid_keywords) . ')(?=,|$)\'' : '');
+        : ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . join('|', $valid_keywords) . ')(?=,|$)\'' : '');
 
     $VALID_SORT_FIELDS = array('name', 'relevance', 'lastUpdated', 'addedAt', 'itemID');
     // Make sure `order_by` is not an array.

@@ -26,7 +26,7 @@ class QueryLogger extends ServiceProvider
             \Log::debug("\nRan query:");
             \Log::debug($query->sql);
             \Log::debug('Bound arguments: ');
-            \Log::debug(implode(', ', $query->bindings));
+            \Log::debug(join(', ', $query->bindings));
             \Log::debug("Took $query->time ms. ");
         });
     }

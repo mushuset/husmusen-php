@@ -23,7 +23,7 @@
     @unless($field == 'museumDetails')
     <tr>
         <td>{{ $field }}</td>
-        <td>{{ is_array($value) ? implode(',', $value) : $value }}</td>
+        <td>{{ is_array($value) ? join(',', $value) : $value }}</td>
     </tr>
     @endunless
     @endforeach
