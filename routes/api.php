@@ -63,9 +63,10 @@ Route::get('/1.0.0/item/search', function (Request $request) {
 
     // Filter for only valid types.
     $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);  // Make sure `types` isn't an array already, before splitting it into one.
-    $types_valid = array_filter($types_as_array, function ($k, $v) {
+    $valid_types = array_filter($types_as_array, function ($k, $v) {
         return in_array($v, HusmusenItem::$valid_types);
     }, ARRAY_FILTER_USE_BOTH);
+    $types_sql = "('" . implode("','", sizeof($valid_types) != 0 ? $valid_types : HusmusenItem::$valid_types) . "')";
 
     // Make sure `keyword_mode` is not an array.
     $keyword_mode_as_string = is_array($keyword_mode) ? end($keyword_mode) : $keyword_mode;
@@ -74,7 +75,9 @@ Route::get('/1.0.0/item/search', function (Request $request) {
 
     $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);  // Make sure `keyword` isn't an array already, before splitting it into one.
     // TODO: Validate the keywords.
-    $valid_keywords = $keywords_as_array;
+    $valid_keywords = array_filter($keywords_as_array, function ($key, $value) {
+        return true;
+    }, ARRAY_FILTER_USE_BOTH);
 
     // Create keyword SQL; slightly magical. :|
     $keyword_search_sql = $keyword_mode === 'AND'
@@ -99,30 +102,20 @@ Route::get('/1.0.0/item/search', function (Request $request) {
         ? ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'ASC' : 'DESC')
         : ($reverse == '1' || $reverse == 'on' || $reverse == 'true' ? 'DESC' : 'ASC');
 
-    $magic_relevance_sql = '((MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST(:freetext IN BOOLEAN MODE) + 1) - 1) / 3';
-    $magic_relevance_search_sql = $freetext != null ? 'AND (MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) OR MATCH(description) AGAINST(:freetext IN BOOLEAN MODE))' : '';
+    // FIXME: Find a way to make sure this is safe and no SQL-incations...
+    $sanitized_freetext = $freetext;
 
-    // Create a SQL squery.
-    $query = DB::table('husmusen_items')
-        // Add relevance
-        ->select('*', DB::raw("{$magic_relevance_sql} AS relevance"), [':freetext' => $freetext])
-        ->whereIn('type', $types_valid);
+    $magic_relevance_sql = "((MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) - 1) / 3";
+    $magic_relevance_search_sql = $freetext != null ? "AND (MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) OR MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE))" : '';
 
-    // Add the keyword search if necessary
-    if (!empty($keyword_search_sql)) {
-        $query->whereRaw($keyword_search_sql);
-    }
-
-    // Add the magic relevance search if necessary
-    if (!empty($magic_relevance_search_sql)) {
-        $query->whereRaw($magic_relevance_search_sql, [':freetext' => $freetext]);
-    }
-
-    // Sort and order the results
-    $query->orderBy($order_by_sane, $should_reverse_order);
-
-    // Execute the query and get the results
-    return $query->get();
+    return DB::select("
+        SELECT *, ($magic_relevance_sql) AS relevance
+            FROM husmusen_items
+            WHERE type IN $types_sql
+            $keyword_search_sql
+            $magic_relevance_search_sql
+            ORDER BY $order_by_sane $should_reverse_order
+        ");
 });
 
 Route::get('/1.0.0/item/info/{id}', function (string $id) {
