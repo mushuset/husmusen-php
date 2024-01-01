@@ -34,10 +34,9 @@ use Illuminate\Support\Facades\Route;
  */
 
 // TODO: This should load from a file instead!
-// FIXME: For some reason, this does not work...
 Route::get('/db_info', function () {
     $db_info = HusmusenDBInfo::Default();
-    return $db_info;
+    return response()->json($db_info);
 });
 
 // TODO: This should load from a file instead!
@@ -85,7 +84,11 @@ Route::get('/1.0.0/item/search', function (Request $request) {
 });
 
 Route::get('/1.0.0/item/info/{id}', function (string $id) {
-    return HusmusenItem::find($id);
+    $item = HusmusenItem::find($id);
+    if (!$item) {
+        return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
+    }
+    return $item;
 });
 
 Route::get('/1.0.0/file/get/{id}', function (string $id) {
@@ -94,7 +97,10 @@ Route::get('/1.0.0/file/get/{id}', function (string $id) {
 });
 
 Route::get('/1.0.0/file/info/{id}', function (string $id) {
-    return HusmusenFile::find($id);
+    $file = HusmusenFile::find($id);
+    if (!$file) {
+        return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
+    }
 });
 
 Route::get('/1.0.0/keyword', function () {
@@ -135,7 +141,7 @@ Route::post('/auth/login', function (Request $request) {
 
     return response()->json([
         'token' => $token,
-        'validUntil' => date('c', $valid_until)  // Fromat date as per ISO 8601.
+        'validUntil' => date('c', $valid_until)  // Format date as per ISO 8601.
     ]);
 });
 
@@ -143,11 +149,8 @@ Route::post('/auth/who');
 Route::post('/auth/new');
 Route::post('/auth/change_password');
 
-// TODO: Get this from an environment variable instead!
-// IMPORTANT: This route should **only** be accessible in a debug mode -- else it could have destructive consequences!
-$IS_DEBUG_MODE = false;
-if ($IS_DEBUG_MODE) {
-    Route::post('/api/auth/debug_admin_creation', function (Request $request) {
+if (env('APP_DEBUG', false)) {
+    Route::post('/auth/debug_admin_creation', function (Request $request) {
         $username = $request->input('username');
         $password = $request->input('password');
 
