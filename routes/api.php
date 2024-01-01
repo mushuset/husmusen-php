@@ -63,9 +63,9 @@ Route::get('/1.0.0/item/search', function (Request $request) {
 
     // Filter for only valid types.
     $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);  // Make sure `types` isn't an array already, before splitting it into one.
-    $valid_types = array_filter($types_as_array, function ($k, $v) {
-        return in_array($v, HusmusenItem::$valid_types);
-    }, ARRAY_FILTER_USE_BOTH);
+    $valid_types = array_filter($types_as_array, function ($type) {
+        return in_array($type, HusmusenItem::$valid_types);
+    });
     $types_sql = "('" . implode("','", sizeof($valid_types) != 0 ? $valid_types : HusmusenItem::$valid_types) . "')";
 
     // Make sure `keyword_mode` is not an array.
@@ -75,9 +75,9 @@ Route::get('/1.0.0/item/search', function (Request $request) {
 
     $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);  // Make sure `keyword` isn't an array already, before splitting it into one.
     // TODO: Validate the keywords.
-    $valid_keywords = array_filter($keywords_as_array, function ($key, $value) {
+    $valid_keywords = array_filter($keywords_as_array, function ($keyword) {
         return true;
-    }, ARRAY_FILTER_USE_BOTH);
+    });
 
     // Create keyword SQL; slightly magical. :|
     $keyword_search_sql = $keyword_mode === 'AND'
