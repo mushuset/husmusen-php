@@ -8,15 +8,15 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+ * |--------------------------------------------------------------------------
+ * | Web Routes
+ * |--------------------------------------------------------------------------
+ * |
+ * | Here is where you can register web routes for your application. These
+ * | routes are loaded by the RouteServiceProvider and all of them will
+ * | be assigned to the "web" middleware group. Make something great!
+ * |
+ */
 
 Route::get('/', function () {
     return Redirect::to('/app');
@@ -100,9 +100,7 @@ Route::get('/app/control_panel/log', function () {
     return view('control_panel.log');
 });
 
-// FIXME: This should be read from an environment variable!
-$DEBUG = false;
-if ($DEBUG == true) {
+if (env('APP_DEBUG', false)) {
     Route::get('/app/setup', function () {
         return view('item');
     });

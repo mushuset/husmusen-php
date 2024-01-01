@@ -51,7 +51,6 @@ Route::get('/db_info/versions', function () {
     return join(',', $db_info->protocolVersions);
 });
 
-// FIXME: This isn't really working, and I am taking a break from it.
 Route::get('/1.0.0/item/search', function (Request $request) {
     // Get all the parameters from the request.
     $types = $request->query('types', '');

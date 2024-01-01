@@ -21,13 +21,14 @@ class QueryLogger extends ServiceProvider
      */
     public function boot(): void
     {
-        // FIXME: This should only be ran if environment variable `DEBUG` is set to true.
-        DB::listen(function (QueryExecuted $query) {
-            \Log::debug("\nRan query:");
-            \Log::debug($query->sql);
-            \Log::debug('Bound arguments: ');
-            \Log::debug(join(', ', $query->bindings));
-            \Log::debug("Took $query->time ms. ");
-        });
+        if (env('APP_DEBUG', false)) {
+            DB::listen(function (QueryExecuted $query) {
+                \Log::debug("\nRan query:");
+                \Log::debug($query->sql);
+                \Log::debug('Bound arguments: ');
+                \Log::debug(join(', ', $query->bindings));
+                \Log::debug("Took $query->time ms. ");
+            });
+        }
     }
 }
