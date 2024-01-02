@@ -30,7 +30,7 @@ Route::get('/app', function (Request $request) {
 Route::get('/app/search', function (Request $request) {
     $queries = $request->query();
     return view('search', ['queries' => $queries]);
-})->middleware('auth:user');
+});
 
 // TODO: Also search for files related to the item.
 Route::get('/app/item/{id}', function (string $id) {
