@@ -13,9 +13,7 @@ class Kernel extends HttpKernel
      *
      * @var array<int, class-string|string>
      */
-    protected $middleware = [
-
-    ];
+    protected $middleware = [];
 
     /**
      * The application's route middleware groups.
@@ -23,13 +21,8 @@ class Kernel extends HttpKernel
      * @var array<string, array<int, class-string|string>>
      */
     protected $middlewareGroups = [
-        'web' => [
-
-        ],
-
-        'api' => [
-
-        ],
+        'web' => [],
+        'api' => [],
     ];
 
     /**

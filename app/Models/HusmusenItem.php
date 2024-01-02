@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Represents all possible item types.
@@ -95,8 +95,8 @@ class HusmusenItem extends Model
 
     public static function get_next_item_id(): int
     {
-        $id = DB::selectOne("SELECT itemID FROM husmusen_items ORDER BY itemID DESC LIMIT 1");
-        if(!$id)
+        $id = DB::selectOne('SELECT itemID FROM husmusen_items ORDER BY itemID DESC LIMIT 1');
+        if (!$id)
             return 1;
         return $id->itemID + 1;
     }
