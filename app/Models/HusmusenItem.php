@@ -119,16 +119,16 @@ class HusmusenItem extends Model
         $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);  // Make sure `keyword` isn't an array already, before splitting it into one.
         // TODO: Validate the keywords.
         $valid_keywords = array_filter($keywords_as_array, function ($keyword) {
-            return true;
+            return strlen($keyword) > 0;
         });
 
         // Create keyword SQL; slightly magical. :|
         $keyword_search_sql = $keyword_mode === 'AND'
             // If in "AND-mode", use this magic RegEx created here:
             // This also requires the keywords to be sorted alphabetically.
-            ? ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . join('(.*,|)', $valid_keywords) . ')(?=,|$)\'' : '')
+            ? (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . join('(.*,|)', $valid_keywords) . ')(?=,|$)\'' : '')
             // Otherwise, use "OR-mode" with this magic RegEx:
-            : ($valid_keywords ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . join('|', $valid_keywords) . ')(?=,|$)\'' : '');
+            : (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(" . join('|', $valid_keywords) . ')(?=,|$)\'' : '');
 
         $VALID_SORT_FIELDS = array('name', 'relevance', 'lastUpdated', 'addedAt', 'itemID');
         // Make sure `order_by` is not an array.
