@@ -1,13 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use App\Models\HusmusenDBInfo;
 use App\Models\HusmusenError;
 use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
+use App\Models\HusmusenLog;
 use App\Models\HusmusenUser;
 use Illuminate\Hashing\Argon2IdHasher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -181,17 +182,13 @@ Route::post('/auth/login', function (Request $request) {
 });
 
 Route::post('/auth/who', function (Request $request) {
-    $token = $request->header("Husmusen-Access-Token");
+    $token = $request->header('Husmusen-Access-Token');
     return HusmusenUser::decode_token($token);
 })->middleware('auth:user');
 
-Route::post('/auth/new', function (Request $request) {
+Route::post('/auth/new', function (Request $request) {})->middleware('auth:user');
 
-})->middleware('auth:user');
-
-Route::post('/auth/change_password', function (Request $request) {
-
-})->middleware('auth:user');
+Route::post('/auth/change_password', function (Request $request) {})->middleware('auth:user');
 
 if (env('APP_DEBUG', false)) {
     Route::post('/auth/debug_admin_creation', function (Request $request) {
@@ -223,20 +220,20 @@ if (env('APP_DEBUG', false)) {
 /*
  * PROTECTED ROUTES
  */
-Route::post('/1.0.0/item/new', function () { })->middleware('auth:user');
-Route::post('/1.0.0/item/edit/{id}', function () { })->middleware('auth:user');
-Route::post('/1.0.0/item/mark/{id}', function () { })->middleware('auth:user');
-Route::post('/1.0.0/file/new', function () { })->middleware('auth:user');
-Route::post('/1.0.0/file/edit/{id}', function () { })->middleware('auth:user');
-Route::post('/1.0.0/file/delete/{id}', function () { })->middleware('auth:user');
+Route::post('/1.0.0/item/new', function () {})->middleware('auth:user');
+Route::post('/1.0.0/item/edit/{id}', function () {})->middleware('auth:user');
+Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user');
+Route::post('/1.0.0/file/new', function () {})->middleware('auth:user');
+Route::post('/1.0.0/file/edit/{id}', function () {})->middleware('auth:user');
+Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user');
 
 /*
  * PROTECTED ROUTES (ADMIN ONLY)
  */
-Route::post('/db_info', function () { })->middleware('auth:admin');
-Route::post('/1.0.0/item/delete/{id}', function () { })->middleware('auth:admin');
-Route::post('/1.0.0/keyword', function () { })->middleware('auth:admin');
+Route::post('/db_info', function () {})->middleware('auth:admin');
+Route::post('/1.0.0/item/delete/{id}', function () {})->middleware('auth:admin');
+Route::post('/1.0.0/keyword', function () {})->middleware('auth:admin');
 
 Route::get('/1.0.0/log/get', function () {
-    return 'test';
-});
+    return response()->json(HusmusenLog::all()->sortBy('timestamp'));
+})->middleware('auth:admin');
