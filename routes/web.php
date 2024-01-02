@@ -64,7 +64,7 @@ Route::get('/app/keywords', function () {
 });
 
 Route::get('/app/db_info', function () {
-    $db_info = HusmusenDBInfo::Default();
+    $db_info = HusmusenDBInfo::get_db_info();
     return view('db_info', ['db_info' => $db_info]);
 });
 
