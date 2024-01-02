@@ -34,6 +34,10 @@ class Authenticate
                 return HusmusenError::SendError(401, 'ERR_NOT_ALLOWED', 'You need to be an admin to do this!');
             }
         }
+
+        request()->instance()->query->set('auth_username', $token_info->sub);
+        request()->instance()->query->set('auth_is_admin', $token_info->admin);
+
         return $next($request);
     }
 }

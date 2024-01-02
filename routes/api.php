@@ -181,5 +181,6 @@ Route::post('/1.0.0/item/delete/{id}', function () {})->middleware('auth:admin')
 Route::post('/1.0.0/keyword', function () {})->middleware('auth:admin');
 
 Route::get('/1.0.0/log/get', function () {
-    return response()->json(HusmusenLog::all()->sortBy('timestamp'));
+    HusmusenLog::write('Auth', "Admin '" . request()->query('auth_username') . "' accessed the log!");
+    return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
 })->middleware('auth:admin');

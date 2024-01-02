@@ -1,5 +1,6 @@
 import checkIfLoggedIn from "./checkIfLoggedIn.js"
 import checkSuccess from "./checkSuccess.js"
+import { getColorForName } from "./colors.js"
 
 const output = document.querySelector(".log")
 
@@ -22,7 +23,7 @@ checkIfLoggedIn()
                 .map(
                     logEntry => `
                         <p class="timestamp">${logEntry.timestamp}</p>
-                        <p class="prefix">${logEntry.prefix}</p>
+                        <p class="prefix" style="color: ${getColorForName(logEntry.prefix)}">${logEntry.prefix}</p>
                         <p class="message">${logEntry.message}</p>
                     `
                 ).join("")
