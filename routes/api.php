@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use App\Models\HusmusenDBInfo;
 use App\Models\HusmusenError;
 use App\Models\HusmusenFile;
@@ -179,9 +180,18 @@ Route::post('/auth/login', function (Request $request) {
     ]);
 });
 
-Route::post('/auth/who');
-Route::post('/auth/new');
-Route::post('/auth/change_password');
+Route::post('/auth/who', function (Request $request) {
+    $token = $request->header("Husmusen-Access-Token");
+    return HusmusenUser::decode_token($token);
+})->middleware('auth:user');
+
+Route::post('/auth/new', function (Request $request) {
+
+})->middleware('auth:user');
+
+Route::post('/auth/change_password', function (Request $request) {
+
+})->middleware('auth:user');
 
 if (env('APP_DEBUG', false)) {
     Route::post('/auth/debug_admin_creation', function (Request $request) {
@@ -213,19 +223,20 @@ if (env('APP_DEBUG', false)) {
 /*
  * PROTECTED ROUTES
  */
-Route::post('/1.0.0/item/new');
-Route::post('/1.0.0/item/edit/{id}');
-Route::post('/1.0.0/item/mark/{id}');
-
-Route::post('/1.0.0/file/new');
-Route::post('/1.0.0/file/edit/{id}');
-Route::post('/1.0.0/file/delete/{id}');
+Route::post('/1.0.0/item/new', function () { })->middleware('auth:user');
+Route::post('/1.0.0/item/edit/{id}', function () { })->middleware('auth:user');
+Route::post('/1.0.0/item/mark/{id}', function () { })->middleware('auth:user');
+Route::post('/1.0.0/file/new', function () { })->middleware('auth:user');
+Route::post('/1.0.0/file/edit/{id}', function () { })->middleware('auth:user');
+Route::post('/1.0.0/file/delete/{id}', function () { })->middleware('auth:user');
 
 /*
  * PROTECTED ROUTES (ADMIN ONLY)
  */
-Route::post('/db_info');
-Route::post('/1.0.0/item/delete/{id}');
-Route::post('/1.0.0/keyword');
+Route::post('/db_info', function () { })->middleware('auth:admin');
+Route::post('/1.0.0/item/delete/{id}', function () { })->middleware('auth:admin');
+Route::post('/1.0.0/keyword', function () { })->middleware('auth:admin');
 
-Route::get('/1.0.0/log/get');
+Route::get('/1.0.0/log/get', function () {
+    return 'test';
+});

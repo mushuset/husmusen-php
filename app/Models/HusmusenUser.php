@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use stdClass;
 
 // FIXME: Read this from a .env file or something...
 const JWT_KEY = 'CHANGE ME!';
@@ -44,10 +45,15 @@ class HusmusenUser extends Model
             'nbf' => time(),
             'exp' => $valid_until,
             'sub' => $user->username,
-            'adm' => $user->isAdmin
+            'admin' => $user->isAdmin
         ];
         $token = JWT::encode($payload, JWT_KEY, 'HS256');
         return $token;
+    }
+
+    public static function decode_token(string $token): stdClass
+    {
+        return JWT::decode($token, new Key(JWT_KEY, 'HS256'));
     }
 
     /**
@@ -57,7 +63,7 @@ class HusmusenUser extends Model
     public static function check_token_validity(string $token): bool
     {
         try {
-            JWT::decode($token, new Key(JWT_KEY, 'HS256'));
+            HusmusenUser::decode_token($token);
             return true;
         } catch (\LogicException $e) {
             return false;

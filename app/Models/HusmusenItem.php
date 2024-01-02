@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -91,4 +92,12 @@ class HusmusenItem extends Model
         'Sketch',
         'Sound'
     );
+
+    public static function get_next_item_id(): int
+    {
+        $id = DB::selectOne("SELECT itemID FROM husmusen_items ORDER BY itemID DESC LIMIT 1");
+        if(!$id)
+            return 1;
+        return $id->itemID + 1;
+    }
 }

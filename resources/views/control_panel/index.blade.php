@@ -2,7 +2,7 @@
 
 @section('head')
     <title>Husmusen - Kontrollpanel</title>
-    <script src="/static/scripts/controlPanel.js" async defer type="module"></script>
+    <script src="/resources/scripts/controlPanel.js" async defer type="module"></script>
 @endsection
 
 @section('body')

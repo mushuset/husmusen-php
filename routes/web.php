@@ -30,7 +30,7 @@ Route::get('/app', function (Request $request) {
 Route::get('/app/search', function (Request $request) {
     $queries = $request->query();
     return view('search', ['queries' => $queries]);
-});
+})->middleware('auth:user');
 
 // TODO: Also search for files related to the item.
 Route::get('/app/item/{id}', function (string $id) {
@@ -81,7 +81,13 @@ Route::get('/app/control_panel', function () {
 });
 
 Route::get('/app/control_panel/new_item', function () {
-    return view('control_panel.new_item');
+    // type validation
+    if(!in_array(request()->query('type'), HusmusenItem::$valid_types)) {
+        request()->instance()->query->set('type', 'Book');
+    }
+
+    $next_item_id = HusmusenItem::get_next_item_id();
+    return view('control_panel.new_item', ['next_item_id' => $next_item_id]);
 });
 
 Route::get('/app/control_panel/edit_item', function () {
