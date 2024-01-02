@@ -14,6 +14,6 @@
     Det är utvecklat för att vara så lätt som möjligt att implementera, men samtidigt fullständingt
     nog för att fungera bra. Husmusen har också öppen källkod som du kan hitta på
     <a href="https://github.com/mushuset/husmusen-php">GitHub (PHP-versionen; denna)</a>, eller
-    <a href="https://github.com/mushuset/husmusen-php">GitHub (Nodeversionen; syskonversion)</a>.
+    <a href="https://github.com/mushuset/husmusen">GitHub (Nodeversionen; syskonversion)</a>.
 </p>
 @endsection
