@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Symfony\Component\Yaml\Yaml;
+use stdClass;
+
 class HusmusenMuseumDetails
 {
     public string $name;
@@ -53,15 +56,8 @@ class HusmusenDBInfo
         $this->museumDetails = $museumDetails;
     }
 
-    static function Default(): HusmusenDBInfo
+    static function get_db_info(): stdClass
     {
-        return new HusmusenDBInfo(
-            '1.0.0',
-            ['1.0.0'],
-            ['YAML', 'JSON'],
-            ['YAML', 'JSON'],
-            'Husmusen på Museum',
-            HusmusenMuseumDetails::Default()
-        );
+        return (object) Yaml::parseFile(base_path('data/db_info.yaml'));
     }
 }

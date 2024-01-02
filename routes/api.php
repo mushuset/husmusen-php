@@ -35,22 +35,19 @@ use Illuminate\Support\Facades\Route;
  * PUBLIC ROUTES
  */
 
-// TODO: This should load from a file instead!
 Route::get('/db_info', function () {
-    $db_info = HusmusenDBInfo::Default();
+    $db_info = HusmusenDBInfo::get_db_info();
     return response()->json($db_info);
 });
 
-// TODO: This should load from a file instead!
 Route::get('/db_info/version', function () {
-    $db_info = HusmusenDBInfo::Default();
-    return $db_info->protocolVersion;
+    $db_info = HusmusenDBInfo::get_db_info();
+    return response($db_info->protocolVersion)->header('Content-Type', 'text/plain');
 });
 
-// TODO: This should load from a file instead!
 Route::get('/db_info/versions', function () {
-    $db_info = HusmusenDBInfo::Default();
-    return join(',', $db_info->protocolVersions);
+    $db_info = HusmusenDBInfo::get_db_info();
+    return response(join(',', $db_info->protocolVersions))->header('Content-Type', 'text/plain');
 });
 
 Route::get('/1.0.0/item/search', function (Request $request) {
@@ -121,6 +118,8 @@ Route::post('/auth/login', function (Request $request) {
     $valid_until = time() + 14400;
     $token = HusmusenUser::get_token($user, $valid_until);
 
+    HusmusenLog::write('Auth', sprintf("%s '%s' logged in!", ($user->isAdmin) ? 'Admin' : 'User', $user->username));
+
     return response()->json([
         'token' => $token,
         'validUntil' => date('c', $valid_until)  // Format date as per ISO 8601.
@@ -166,7 +165,9 @@ if (env('APP_DEBUG', false)) {
 /*
  * PROTECTED ROUTES
  */
-Route::post('/1.0.0/item/new', function () {})->middleware('auth:user');
+Route::post('/1.0.0/item/new', function () {
+    HusmusenLog::write('Database', sprintf("%s '%s' created item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username')), 99);
+})->middleware('auth:user');
 Route::post('/1.0.0/item/edit/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user');
@@ -181,6 +182,6 @@ Route::post('/1.0.0/item/delete/{id}', function () {})->middleware('auth:admin')
 Route::post('/1.0.0/keyword', function () {})->middleware('auth:admin');
 
 Route::get('/1.0.0/log/get', function () {
-    HusmusenLog::write('Auth', "Admin '" . request()->query('auth_username') . "' accessed the log!");
+    HusmusenLog::write('Auth', sprintf("Admin '%s' accessed the log!", request()->query('auth_username')));
     return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
 })->middleware('auth:admin');
