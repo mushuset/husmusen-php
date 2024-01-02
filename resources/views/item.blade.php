@@ -33,8 +33,8 @@
     <table class="custom-data">
         @foreach($item->customData as $field => $value)
         <tr>
-            <td>{{ field }}</td>
-            <td>{{ value }}</td>
+            <td>{{ $field }}</td>
+            <td>{{ $value }}</td>
         </tr>
         @endforeach
     </table>
