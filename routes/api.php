@@ -131,7 +131,7 @@ Route::post('/auth/who', function (Request $request) {
     return HusmusenUser::decode_token($token);
 })->middleware('auth:user');
 
-Route::post('/auth/new', function (Request $request) {})->middleware('auth:user');
+Route::post('/auth/new', function (Request $request) {})->middleware('auth:admin');
 
 Route::post('/auth/change_password', function (Request $request) {})->middleware('auth:user');
 
