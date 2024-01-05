@@ -178,10 +178,28 @@ Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user');
  * PROTECTED ROUTES (ADMIN ONLY)
  */
 Route::post('/db_info', function () {})->middleware('auth:admin');
-Route::post('/1.0.0/item/delete/{id}', function () {})->middleware('auth:admin');
+Route::post('/1.0.0/item/delete', function (Request $request) {
+    $id = $request->input('itemID');
+    if (!$id) {
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
+    }
+
+    $item = HusmusenItem::find($id);
+    if (!$item) {
+        return HusmusenError::SendError(400, 'ERR_OBJECT_NOT_FOUND', "That item doesn't exist!");
+    }
+
+    HusmusenItem::destroy($id);  // TODO: remove related files.
+    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username'), $id));
+    return $item;
+})->middleware('auth:admin');
+
 Route::post('/1.0.0/keyword', function () {})->middleware('auth:admin');
 
 Route::get('/1.0.0/log/get', function () {
-    HusmusenLog::write('Auth', sprintf("Admin '%s' accessed the log!", request()->query('auth_username')));
-    return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
+    $reverse = request()->query('reverse', 'on');
+    if (in_array($reverse, ['on', '1', 'true'])) {
+        return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
+    }
+    return response()->json(HusmusenLog::orderBy('timestamp')->get());
 })->middleware('auth:admin');

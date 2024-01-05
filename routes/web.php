@@ -3,9 +3,12 @@
 use App\Models\HusmusenDBInfo;
 use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Yaml\Yaml;
 
 /*
  * |--------------------------------------------------------------------------
@@ -43,7 +46,7 @@ Route::get('/app/item/{id}', function (string $id) {
     $item = HusmusenItem::find($id);
 
     // Check if the item doesn't exist.
-    if ($item == null) {
+    if (!$item) {
         return view('item', ['err' => 'Item not found!']);
     }
 
@@ -91,7 +94,23 @@ Route::get('/app/control_panel/new_item', function () {
 });
 
 Route::get('/app/control_panel/edit_item', function () {
-    return view('control_panel.edit_item');
+    $id = request()->query('itemID');
+    if (!$id) {
+        return view('control_panel.edit_item', ['err' => 'No itemID specified.']);
+    }
+
+    $item = HusmusenItem::find($id);
+    if (!$item) {
+        return view('control_panel.edit_item', ['err' => 'Item not found.']);
+    }
+
+    $item = $item->toArray();
+
+    $item['itemData'] = json_decode($item['itemData'], true);
+    $item['customData'] = json_decode($item['customData'], true);
+
+    $item_as_yaml = Yaml::dump($item, 2, 4);
+    return view('control_panel.edit_item', ['itemID' => $id, 'itemAsYAML' => $item_as_yaml]);
 });
 
 Route::get('/app/control_panel/edit_file', function () {
