@@ -6,7 +6,6 @@ use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
 use App\Models\HusmusenLog;
 use App\Models\HusmusenUser;
-use Illuminate\Hashing\Argon2IdHasher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -93,26 +92,21 @@ Route::post('/auth/login', function (Request $request) {
     $username = $request->input('username');
     $password = $request->input('password');
 
-    if (!$username) {
+    if (!$username)
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
-    }
 
-    if (!$password) {
+    if (!$password)
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
-    }
 
     $user = HusmusenUser::find($username);
 
-    if (!$user) {
+    if (!$user)
         return HusmusenError::SendError(500, 'ERR_USER_NOT_FOUND', 'There was an error looking up the user!');
-    }
 
-    $argon2 = new Argon2IdHasher();
-    $pass_is_valid = $argon2->check($password, $user->password);
+    $pass_is_valid = Hash::check($password, $user->password);
 
-    if (!$pass_is_valid) {
+    if (!$pass_is_valid)
         return HusmusenError::SendError(400, 'ERR_INVALID_PASSWORD', 'Incorrect password.');
-    }
 
     // 4 hours in the future.
     $valid_until = time() + 14400;
@@ -133,30 +127,53 @@ Route::post('/auth/who', function (Request $request) {
 
 Route::post('/auth/new', function (Request $request) {})->middleware('auth:admin');
 
-Route::post('/auth/change_password', function (Request $request) {})->middleware('auth:user');
+Route::post('/auth/change_password', function (Request $request) {
+    $current_password = $request->input('currentPassword');
+    $new_password = $request->input('newPassword');
+
+    if (!$current_password)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'currentPassword'.");
+
+    if (!$new_password)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'newPassword'.");
+
+    // This will be safe, it will always return a valid user.
+    // The middleware will make sure that there's never a non-logged-in user here.
+    // By extent, this always returns an existing user.
+    $token = $request->header('Husmusen-Access-Token');
+    $decoded_token = HusmusenUser::decode_token($token);
+    $who = HusmusenUser::find($decoded_token->sub);
+
+    $password_matches = Hash::check($current_password, $who->password);
+    if (!$password_matches)
+        return HusmusenError::SendError(401, 'ERR_INVALID_PASSWORD', "Your provided 'currentPassword' is not correct!");
+
+    DB::table('husmusen_users')
+        ->where('username', $who->sub)
+        ->update(['password' => Hash::make($new_password)]);
+
+    return response()->json(['username' => $who->username, 'password' => ($new_password)]);
+})->middleware('auth:user');
 
 if (env('APP_DEBUG', false)) {
     Route::post('/auth/debug_admin_creation', function (Request $request) {
         $username = $request->input('username');
         $password = $request->input('password');
 
-        if (!$username) {
+        if (!$username)
             return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
-        }
 
-        if (!$password) {
+        if (!$password)
             return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
-        }
 
         $user = HusmusenUser::find($username);
 
-        if ($user) {
+        if ($user)
             return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
-        }
 
         HusmusenUser::create([
             'username' => $username,
-            'password' => $password,
+            'password' => Hash::make($password),
             'isAdmin' => true,
         ]);
     });
@@ -166,7 +183,7 @@ if (env('APP_DEBUG', false)) {
  * PROTECTED ROUTES
  */
 Route::post('/1.0.0/item/new', function () {
-    HusmusenLog::write('Database', sprintf("%s '%s' created item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username')), 99);
+    HusmusenLog::write('Database', sprintf("%s '%s' created item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username')));
 })->middleware('auth:user');
 Route::post('/1.0.0/item/edit/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user');
