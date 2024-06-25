@@ -203,11 +203,39 @@ Route::post('/1.0.0/item/new', function () {
     return json_encode($itemToCreate);
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/item/edit/{id}', function () {})->middleware('auth:user');
-Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user');
-Route::post('/1.0.0/file/new', function () {})->middleware('auth:user');
-Route::post('/1.0.0/file/edit/{id}', function () {})->middleware('auth:user');
-Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user');
+Route::post('/1.0.0/item/edit', function () {
+    $itemID = request()->input('itemID');
+    $itemToUpdate = HusmusenItem::find($itemID);
+
+    if (!$itemToUpdate) {
+        return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
+    }
+
+    $newItemData = request()->input('newItemData');
+    $saveSucceded = HusmusenItem::update_from_array_data($itemToUpdate, $newItemData);
+
+    if (!$saveSucceded) {
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+    }
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "%s '%s' updated item with ID '%s'!",
+            request()->query('is_admin') ? 'Admin' : 'User',
+            request()->query('auth_username'),
+            $itemToUpdate->itemID
+        )
+    );
+
+    // TODO: I don't know if this data will be changed or not.
+    // Depends on if it is passed by reference or value... (Check!)
+    return json_encode($itemToUpdate);
+})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/file/new', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/file/edit/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
 /*
  * PROTECTED ROUTES (ADMIN ONLY)

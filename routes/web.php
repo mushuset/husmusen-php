@@ -106,9 +106,6 @@ Route::get('/app/control_panel/edit_item', function () {
 
     $item = $item->toArray();
 
-    $item['itemData'] = json_decode($item['itemData'], true);
-    $item['customData'] = json_decode($item['customData'], true);
-
     $item_as_yaml = Yaml::dump($item, 2, 4);
     return view('control_panel.edit_item', ['itemID' => $id, 'itemAsYAML' => $item_as_yaml]);
 });
