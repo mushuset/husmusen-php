@@ -184,7 +184,11 @@ if (env('APP_DEBUG', false)) {
  */
 Route::post('/1.0.0/item/new', function () {
     $itemToCreate = HusmusenItem::from_array_data(request()->all());
-    $itemToCreate->save();
+    $saveSucceded = $itemToCreate->save();
+
+    if (!$saveSucceded) {
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+    }
 
     HusmusenLog::write(
         'Database',
@@ -198,6 +202,7 @@ Route::post('/1.0.0/item/new', function () {
 
     return json_encode($itemToCreate);
 })->middleware('auth:user')->middleware('yaml_parser');
+
 Route::post('/1.0.0/item/edit/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user');
