@@ -183,8 +183,21 @@ if (env('APP_DEBUG', false)) {
  * PROTECTED ROUTES
  */
 Route::post('/1.0.0/item/new', function () {
-    HusmusenLog::write('Database', sprintf("%s '%s' created item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username')));
-})->middleware('auth:user');
+    $itemToCreate = HusmusenItem::from_array_data(request()->all());
+    $itemToCreate->save();
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "%s '%s' created item with ID '%s'!",
+            request()->query('is_admin') ? 'Admin' : 'User',
+            request()->query('auth_username'),
+            $itemToCreate->itemID
+        )
+    );
+
+    return json_encode($itemToCreate);
+})->middleware('auth:user')->middleware('yaml_parser');
 Route::post('/1.0.0/item/edit/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user');
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -48,7 +49,7 @@ enum HusmusenItemType
  * @property mixed $itemData Custom data for the item
  * @property boolean $isExpired Whether the item has expired.
  * @property string $expireReason The reason the item has expired, if applicable.
- * @property array<int, HusmusenFile> $files Files associated with the item. (Files are fetched via a join operation.)
+ * @method HasMany<HusmusenFile> files() $files Files associated with the item. (Files are fetched via a join operation.)
  */
 class HusmusenItem extends Model
 {
@@ -69,6 +70,17 @@ class HusmusenItem extends Model
 
     // Define the name of the columns that handles modification time.
     const UPDATED_AT = 'updatedAt';
+
+    // Auto-cast JSON columns to arrays. (And vice versa.)
+    protected $casts = [
+        'itemData' => 'array',
+        'customData' => 'array',
+    ];
+
+    // TODO: Document this
+    public function files(): HasMany {
+        return $this->hasMany(HusmusenFile::class, 'relatedItem');
+    }
 
     public static $valid_types = array(
         'ArtPiece',
@@ -93,6 +105,27 @@ class HusmusenItem extends Model
         'Sketch',
         'Sound'
     );
+
+    public static function from_array_data(array $fromData): HusmusenItem {
+        $item = new HusmusenItem();
+        try {
+            $item->name = $fromData["name"];
+            $item->description = $fromData["description"];
+            $item->keywords = $fromData["keywords"];
+            $item->type = $fromData["type"];
+            $item->itemID = $fromData["itemID"];
+            $item->addedAt = $fromData["addedAt"] ?? null;
+            $item->updatedAt = $fromData["updatedAt"] ?? null;
+            $item->customData = $fromData["customData"] ?? [];
+            $item->itemData = $fromData["itemData"];
+            $item->isExpired = $fromData["isExpired"] ?? false;
+            $item->expireReason = $fromData["expireReason"] ?? null;
+            // Not setting files, since that's a relation.
+            return $item;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 
     public static function get_next_item_id(): int
     {

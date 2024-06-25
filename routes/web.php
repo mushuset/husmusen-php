@@ -51,8 +51,8 @@ Route::get('/app/item/{id}', function (string $id) {
     }
 
     // Convert the JSON data into associative arrays.
-    $item->itemData = json_decode($item->itemData);
-    $item->customData = json_decode($item->customData);
+    // $item->itemData = json_decode($item->itemData);
+    // $item->customData = json_decode($item->customData);
 
     return view('item', ['item' => $item]);
 });
