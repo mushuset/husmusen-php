@@ -232,9 +232,15 @@ Route::post('/1.0.0/item/edit', function () {
     // Depends on if it is passed by reference or value... (Check!)
     return json_encode($itemToUpdate);
 })->middleware('auth:user')->middleware('yaml_parser');
-Route::post('/1.0.0/item/mark/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
+
+Route::post('/1.0.0/item/mark', function () {
+
+})->middleware('auth:user')->middleware('yaml_parser');
+
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user')->middleware('yaml_parser');
+
 Route::post('/1.0.0/file/edit/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
+
 Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
 /*
