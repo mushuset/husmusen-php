@@ -125,7 +125,40 @@ Route::post('/auth/who', function (Request $request) {
     return HusmusenUser::decode_token($token);
 })->middleware('auth:user');
 
-Route::post('/auth/new', function (Request $request) {})->middleware('auth:admin');
+Route::post('/auth/new', function (Request $request) {
+    $username = $request->input('username');
+    $password = $request->input('password');
+    $isAdmin = $request->input('isAdmin');
+
+    if (!$username)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+
+    if (!$password)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+
+    $user = HusmusenUser::find($username);
+
+    if ($user)
+        return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
+
+    $user = HusmusenUser::create([
+        'username' => $username,
+        'password' => Hash::make($password),
+        'isAdmin' => $isAdmin == 'on',
+    ]);
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "'%s' created an account with the username '%s' (%s)!",
+            request()->query('auth_username'),
+            $username,
+            $isAdmin == 'on' ? 'Admin' : 'User',
+        )
+    );
+
+    return response()->json($user);
+})->middleware('auth:admin');
 
 Route::post('/auth/change_password', function (Request $request) {
     $current_password = $request->input('currentPassword');
@@ -233,9 +266,7 @@ Route::post('/1.0.0/item/edit', function () {
     return json_encode($itemToUpdate);
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/item/mark', function () {
-
-})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/item/mark', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user')->middleware('yaml_parser');
 

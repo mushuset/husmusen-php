@@ -29,8 +29,9 @@ class HusmusenUser extends Model
     // Specifiy primary key!
     // This is necessary only when the primary key is something other than 'id'.
     protected $primaryKey = 'username';
-
     protected $keyType = 'string';
+    protected $fillable = ['username', 'password', 'isAdmin'];
+    public $timestamps = false;
 
     /**
      * Create a JWT for a given user.
