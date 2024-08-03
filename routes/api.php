@@ -330,7 +330,31 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
     return response()->json($item);
 })->middleware('auth:user');
 
-Route::post('/1.0.0/file/new', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/file/new', function (Request $request) {
+    $fileToCreate = HusmusenFile::from_array_data(request()->all());
+    $saveSucceded = $fileToCreate->save();
+
+    if (!$saveSucceded) {
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file metadata!');
+    }
+
+    $request->file('avatar')->storeAs(
+        'files', $fileToCreate->fileID
+    );
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "%s '%s' created file with ID '%s'!",
+            request()->query('is_admin') ? 'Admin' : 'User',
+            request()->query('auth_username'),
+            $fileToCreate->fileID
+        )
+    );
+
+    return json_encode($fileToCreate);
+
+})->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/edit/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
