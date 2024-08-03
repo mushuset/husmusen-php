@@ -356,7 +356,35 @@ Route::post('/1.0.0/file/new', function (Request $request) {
 
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/file/edit/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/file/edit/', function () {
+    $fileID = request()->input('fileID');
+    $fileToUpdate = HusmusenFile::find($fileID);
+
+    if (!$fileToUpdate) {
+        return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
+    }
+
+    $newFileData = request()->input('newFileData');
+    $saveSucceded = HusmusenItem::update_from_array_data($fileToUpdate, $newFileData);
+
+    if (!$saveSucceded) {
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
+    }
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "%s '%s' updated file with ID '%s'!",
+            request()->query('is_admin') ? 'Admin' : 'User',
+            request()->query('auth_username'),
+            $fileToUpdate->fileID
+        )
+    );
+
+    // TODO: I don't know if this data will be changed or not.
+    // Depends on if it is passed by reference or value... (Check!)
+    return json_encode($fileToUpdate);
+})->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
