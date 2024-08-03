@@ -69,25 +69,6 @@ Route::get('/1.0.0/item/info/{id}', function (string $id) {
     return $item;
 });
 
-Route::post('/1.0.0/item/mark', function (Request $request) {
-    $item_id = $request->input('itemID');
-
-    $item = HusmusenItem::find($item_id);
-    if (!$item) {
-        return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
-    }
-
-    $item->isExpired = true;
-    $item->expireReason = $request->input('reason');
-
-    $save_succeded = $item->save();
-    if (!$save_succeded) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
-    }
-
-    return response()->json($item);
-});
-
 Route::get('/1.0.0/file/get/{id}', function (string $id) {
     // TODO: Return file data!
     return 'NOT IMPLEMENTED';
@@ -285,7 +266,24 @@ Route::post('/1.0.0/item/edit', function () {
     return json_encode($itemToUpdate);
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/item/mark', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/item/mark', function (Request $request) {
+    $item_id = $request->input('itemID');
+
+    $item = HusmusenItem::find($item_id);
+    if (!$item) {
+        return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
+    }
+
+    $item->isExpired = true;
+    $item->expireReason = $request->input('reason');
+
+    $save_succeded = $item->save();
+    if (!$save_succeded) {
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+    }
+
+    return response()->json($item);
+});
 
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
