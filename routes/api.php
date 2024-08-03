@@ -328,7 +328,7 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
     );
 
     return response()->json($item);
-});
+})->middleware('auth:user');
 
 Route::post('/1.0.0/file/new', function () {})->middleware('auth:user')->middleware('yaml_parser');
 
