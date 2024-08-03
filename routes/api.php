@@ -386,7 +386,24 @@ Route::post('/1.0.0/file/edit/', function () {
     return json_encode($fileToUpdate);
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/file/delete/{id}', function () {})->middleware('auth:user')->middleware('yaml_parser');
+Route::post('/1.0.0/file/delete', function (Request $request) {
+    $id = $request->input('fileID');
+    if (!$id) {
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'fileID'.");
+    }
+
+    $file = HusmusenFile::find($id);
+    if (!$file) {
+        return HusmusenError::SendError(400, 'ERR_FILE_NOT_FOUND', "That item doesn't exist!");
+    }
+
+    HusmusenFile::destroy($id);
+
+    // FIXME: remove related file data in `data/files`.
+
+    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username'), $id));
+    return $file;
+})->middleware('auth:user')->middleware('yaml_parser');
 
 /*
  * PROTECTED ROUTES (ADMIN ONLY)
