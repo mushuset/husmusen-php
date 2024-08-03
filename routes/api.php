@@ -297,19 +297,35 @@ Route::post('/1.0.0/item/edit', function () {
 
 Route::post('/1.0.0/item/mark', function (Request $request) {
     $item_id = $request->input('itemID');
+    $reason = $request->input('reason');
+
+    if (!$item_id)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
+
+    if (!$reason)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'reason'.");
 
     $item = HusmusenItem::find($item_id);
-    if (!$item) {
+    if (!$item)
         return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
-    }
 
     $item->isExpired = true;
     $item->expireReason = $request->input('reason');
 
     $save_succeded = $item->save();
-    if (!$save_succeded) {
+    if (!$save_succeded)
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
-    }
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "%s '%s' marked item with ID '%s' as expired with the reason '%s'!",
+            request()->query('is_admin') ? 'Admin' : 'User',
+            request()->query('auth_username'),
+            $item_id,
+            $reason,
+        )
+    );
 
     return response()->json($item);
 });
