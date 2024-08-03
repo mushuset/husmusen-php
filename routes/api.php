@@ -160,6 +160,35 @@ Route::post('/auth/new', function (Request $request) {
     return response()->json($user);
 })->middleware('auth:admin');
 
+Route::post('/auth/delete', function (Request $request) {
+    $username = $request->input('username');
+
+    if (!$username)
+        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+
+    if ($username == request()->query('auth_username'))
+        return HusmusenError::SendError(402, 'ERR_FORBIDDEN_ACTION', 'You cannot delete yourself!');
+
+    $user = HusmusenUser::find($username);
+
+    if (!$user)
+        return HusmusenError::SendError(400, 'ERR_USER_NOT_FOUND', 'There is no user with that username!');
+
+    if (!$user->delete())
+        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'There was an error deleting that user!');
+
+    HusmusenLog::write(
+        'Database',
+        sprintf(
+            "Admin '%s' deleted the user '%s'!",
+            request()->query('auth_username'),
+            $username,
+        )
+    );
+
+    return response()->json([$username]);
+})->middleware('auth:admin');
+
 Route::post('/auth/change_password', function (Request $request) {
     $current_password = $request->input('currentPassword');
     $new_password = $request->input('newPassword');
