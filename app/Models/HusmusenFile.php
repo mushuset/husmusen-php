@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * This class represents file metadata stored in the database.
  * @property string $name Human readable name for the file.
- * @property string $fileType MIME type of a file. E.g. 'image/png'
+ * @property string $type MIME type of a file. E.g. 'image/png'
  * @property string $license License and ownership information.
  * @property \Ramsey\Uuid\Uuid $fileID
  * @property \DateTime $addedAt
@@ -41,7 +41,7 @@ class HusmusenFile extends Model
         $file = new HusmusenFile();
         try {
             $file->name = $fromData["name"];
-            $file->fileType = $fromData["fileType"];
+            $file->type = $fromData["type"];
             $file->license = $fromData["license"];
             $file->fileID = $fromData["fileID"];
             $file->addedAt = $fromData["addedAt"] ?? null;
