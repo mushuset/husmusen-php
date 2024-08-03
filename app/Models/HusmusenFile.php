@@ -36,4 +36,33 @@ class HusmusenFile extends Model
 
     // Define the name of the columns that handles modification time.
     const UPDATED_AT = 'updatedAt';
+
+    public static function from_array_data(array $fromData): HusmusenFile {
+        $file = new HusmusenFile();
+        try {
+            $file->name = $fromData["name"];
+            $file->fileType = $fromData["fileType"];
+            $file->license = $fromData["license"];
+            $file->fileID = $fromData["fileID"];
+            $file->addedAt = $fromData["addedAt"] ?? null;
+            $file->updatedAt = $fromData["updatedAt"] ?? null;
+            $file->relatedItem = $fromData["relatedItem"] ?? null;
+            // Not setting files, since that's a relation.
+            return $file;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    public static function update_from_array_data(HusmusenFile $file, array $fromData): bool {
+        try {
+            $file->name = $fromData["name"];
+            $file->license = $fromData["license"];
+            $file->relatedItem = $fromData["relatedItem"];
+            // Not setting files, since that's a relation.
+            return $file->save();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 }
