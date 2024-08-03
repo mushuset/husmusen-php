@@ -40,7 +40,7 @@
     </table>
     @if($item->isExpired)
     <p>Objektet har utgått!</p>
-    <p>$item->expireReason</p>
+    <p>{{ $item->expireReason }}</p>
     @endif
     <h2>Filer</h2>
     @if(isset($item->files[0]))
