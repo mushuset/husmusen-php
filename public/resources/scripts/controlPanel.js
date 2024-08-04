@@ -298,9 +298,9 @@ editKeywordsForm?.addEventListener(
                     "Husmusen-Access-Token": localStorage.getItem("api-token"),
                     "Content-Type": "application/json"
                 },
-                body: {
-                    keywords: JSON.stringify(payload)
-                }
+                body: JSON.stringify({
+                    keywords: payload
+                })
             }
         )
             .then(checkSuccess)

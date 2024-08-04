@@ -64,9 +64,10 @@ class HusmusenKeyword
     public static function get_all_as_edit_friendly_format(): string
     {
         $keywords = HusmusenKeyword::get_all();
-        sort($keywords, SORT_STRING);
-        $keyword_string_array = array_map(fn ($keyword): string => $keyword->type.':'.$keyword->word.':'.$keyword->description, $keywords);
+        $keyword_string_array = array_map(fn ($keyword): string => $keyword->type.': '.$keyword->word.': '.$keyword->description, $keywords);
 
-        return implode('\n', $keyword_string_array);
+        natcasesort($keyword_string_array);
+
+        return implode("\n", $keyword_string_array);
     }
 }

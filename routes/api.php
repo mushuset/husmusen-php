@@ -104,7 +104,7 @@ Route::get('/1.0.0/file/info/{id}', function (string $id) {
 });
 
 Route::get('/1.0.0/keyword', function () {
-    return json_encode(HusmusenKeyword::get_all());
+    return HusmusenKeyword::get_all();
 });
 
 /*
@@ -486,14 +486,10 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
 })->middleware('auth:admin');
 
 Route::post('/1.0.0/keyword', function (Request $request) {
-    $keywords = array_map(
-        fn ($keyword): HusmusenKeyword => HusmusenKeyword::from_array_data($keyword),
-        $request->get('keywords')
-    );
-    HusmusenKeyword::update_keywords($keywords);
+    HusmusenKeyword::update_keywords($request->input('keywords'));
 
     return response()->json(HusmusenKeyword::get_all());
-})->middleware('auth:admin');
+})->middleware('auth:admin')->middleware('yaml_parser');
 
 Route::get('/1.0.0/log/get', function (Request $request) {
     $reverse = $request->query('reverse', 'on');
