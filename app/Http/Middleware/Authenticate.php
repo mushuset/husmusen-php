@@ -35,8 +35,8 @@ class Authenticate
             }
         }
 
-        request()->instance()->query->set('auth_username', $token_info->sub);
-        request()->instance()->query->set('auth_is_admin', $token_info->admin);
+        $request->attributes->add(['auth_username' => $token_info->sub]);
+        $request->attributes->add(['auth_is_admin' => $token_info->admin]);
 
         return $next($request);
     }

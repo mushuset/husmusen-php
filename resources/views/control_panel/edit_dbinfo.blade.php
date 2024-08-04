@@ -5,13 +5,13 @@
 @endsection
 
 @section('body')
-    {% if err %}
-        {{ err}}
-    {% else %}
+@if(isset($err))
+        {{ $err }}
+    @else
         <form action="/api/db_info" method="post" class="YAML">
-            <h1>Redigera nyckelord:</h1>
-            <textarea name="YAML" cols="120" rows="20" style="font-family: monospace">{{ dbInfoAsYAML }}</textarea>
+            <h1>Redigera databas information:</h1>
+            <textarea name="YAML" cols="120" rows="20" style="font-family: monospace">{{ $dbInfoAsYAML }}</textarea>
             <input type="submit" value="Spara!">
         </form>
-    {% endif %}
+    @endif
 @endsection

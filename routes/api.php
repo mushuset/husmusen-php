@@ -167,7 +167,7 @@ Route::post('/auth/new', function (Request $request) {
         'Database',
         sprintf(
             "'%s' created an account with the username '%s' (%s)!",
-            $request->query('auth_username'),
+            $request->get('auth_username'),
             $username,
             $isAdmin == 'on' ? 'Admin' : 'User',
         )
@@ -182,7 +182,7 @@ Route::post('/auth/delete', function (Request $request) {
     if (!$username)
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
 
-    if ($username == $request->query('auth_username'))
+    if ($username == $request->get('auth_username'))
         return HusmusenError::SendError(402, 'ERR_FORBIDDEN_ACTION', 'You cannot delete yourself!');
 
     $user = HusmusenUser::find($username);
@@ -197,7 +197,7 @@ Route::post('/auth/delete', function (Request $request) {
         'Database',
         sprintf(
             "Admin '%s' deleted the user '%s'!",
-            $request->query('auth_username'),
+            $request->get('auth_username'),
             $username,
         )
     );
@@ -272,8 +272,8 @@ Route::post('/1.0.0/item/new', function (Request $request) {
         'Database',
         sprintf(
             "%s '%s' created item with ID '%s'!",
-            $request->query('is_admin') ? 'Admin' : 'User',
-            $request->query('auth_username'),
+            $request->get('auth_is_admin') ? 'Admin' : 'User',
+            $request->get('auth_username'),
             $itemToCreate->itemID
         )
     );
@@ -300,8 +300,8 @@ Route::post('/1.0.0/item/edit', function (Request $request) {
         'Database',
         sprintf(
             "%s '%s' updated item with ID '%s'!",
-            $request->query('is_admin') ? 'Admin' : 'User',
-            $request->query('auth_username'),
+            $request->get('auth_is_admin') ? 'Admin' : 'User',
+            $request->get('auth_username'),
             $itemToUpdate->itemID
         )
     );
@@ -336,8 +336,8 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
         'Database',
         sprintf(
             "%s '%s' marked item with ID '%s' as expired with the reason '%s'!",
-            $request->query('is_admin') ? 'Admin' : 'User',
-            $request->query('auth_username'),
+            $request->get('auth_is_admin') ? 'Admin' : 'User',
+            $request->get('auth_username'),
             $item_id,
             $reason,
         )
@@ -363,8 +363,8 @@ Route::post('/1.0.0/file/new', function (Request $request) {
         'Database',
         sprintf(
             "%s '%s' created file with ID '%s'!",
-            $request->query('is_admin') ? 'Admin' : 'User',
-            $request->query('auth_username'),
+            $request->get('auth_is_admin') ? 'Admin' : 'User',
+            $request->get('auth_username'),
             $fileToCreate->fileID
         )
     );
@@ -391,8 +391,8 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
         'Database',
         sprintf(
             "%s '%s' updated file with ID '%s'!",
-            $request->query('is_admin') ? 'Admin' : 'User',
-            $request->query('auth_username'),
+            $request->get('auth_is_admin') ? 'Admin' : 'User',
+            $request->get('auth_username'),
             $fileToUpdate->fileID
         )
     );
@@ -420,14 +420,17 @@ Route::post('/1.0.0/file/delete', function (Request $request) {
 
     // FIXME: remove related file data in `data/files`.
 
-    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->query('is_admin')) ? 'Admin' : 'User', $request->query('auth_username'), $id));
+    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->get('auth_is_admin')) ? 'Admin' : 'User', $request->get('auth_username'), $id));
     return $file;
 })->middleware('auth:user')->middleware('yaml_parser');
 
 /*
  * PROTECTED ROUTES (ADMIN ONLY)
  */
-Route::post('/db_info', function () {})->middleware('auth:admin');
+Route::post('/db_info', function (Request $request) {
+    return HusmusenDBInfo::update_from_array_data($request->all());
+})->middleware('auth:admin')->middleware('yaml_parser');
+
 Route::post('/1.0.0/item/delete', function (Request $request) {
     $id = $request->input('itemID');
     if (!$id) {
@@ -448,7 +451,7 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
     };
 
     HusmusenItem::destroy($id);
-    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->query('is_admin')) ? 'Admin' : 'User', $request->query('auth_username'), $id));
+    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->get('auth_is_admin')) ? 'Admin' : 'User', $request->get('auth_username'), $id));
     return $item;
 })->middleware('auth:admin');
 

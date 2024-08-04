@@ -137,6 +137,13 @@ Route::get('/app/control_panel/edit_keywords', function () {
     return view('control_panel.edit_keywords');
 });
 
+Route::get('/app/control_panel/edit_dbinfo', function () {
+    $db_info = HusmusenDBInfo::get_db_info();
+    $db_info_as_yaml = Yaml::dump((array) $db_info, 2, 4);
+
+    return view('control_panel.edit_dbinfo', ['dbInfoAsYAML' => $db_info_as_yaml]);
+});
+
 Route::get('/app/control_panel/log', function () {
     return view('control_panel.log');
 });
