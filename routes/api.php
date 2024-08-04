@@ -144,7 +144,7 @@ Route::post('/auth/who', function (Request $request) {
 Route::post('/auth/new', function (Request $request) {
     $username = $request->input('username');
     $password = $request->input('password');
-    $isAdmin = $request->input('isAdmin');
+    $is_admin = $request->input('isAdmin');
 
     if (!$username)
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
@@ -160,7 +160,7 @@ Route::post('/auth/new', function (Request $request) {
     $user = HusmusenUser::create([
         'username' => $username,
         'password' => Hash::make($password),
-        'isAdmin' => $isAdmin == 'on',
+        'isAdmin' => $is_admin == 'on',
     ]);
 
     HusmusenLog::write(
@@ -169,7 +169,7 @@ Route::post('/auth/new', function (Request $request) {
             "'%s' created an account with the username '%s' (%s)!",
             $request->get('auth_username'),
             $username,
-            $isAdmin == 'on' ? 'Admin' : 'User',
+            $is_admin == 'on' ? 'Admin' : 'User',
         )
     );
 
@@ -261,10 +261,10 @@ if (env('APP_DEBUG', false)) {
  * PROTECTED ROUTES
  */
 Route::post('/1.0.0/item/new', function (Request $request) {
-    $itemToCreate = HusmusenItem::from_array_data($request->all());
-    $saveSucceded = $itemToCreate->save();
+    $item_to_create = HusmusenItem::from_array_data($request->all());
+    $save_succeded = $item_to_create->save();
 
-    if (!$saveSucceded) {
+    if (!$save_succeded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
@@ -274,25 +274,25 @@ Route::post('/1.0.0/item/new', function (Request $request) {
             "%s '%s' created item with ID '%s'!",
             $request->get('auth_is_admin') ? 'Admin' : 'User',
             $request->get('auth_username'),
-            $itemToCreate->itemID
+            $item_to_create->itemID
         )
     );
 
-    return json_encode($itemToCreate);
+    return json_encode($item_to_create);
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/item/edit', function (Request $request) {
-    $itemID = $request->input('itemID');
-    $itemToUpdate = HusmusenItem::find($itemID);
+    $item_id = $request->input('itemID');
+    $item_to_update = HusmusenItem::find($item_id);
 
-    if (!$itemToUpdate) {
+    if (!$item_to_update) {
         return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
     }
 
-    $newItemData = $request->input('newItemData');
-    $saveSucceded = HusmusenItem::update_from_array_data($itemToUpdate, $newItemData);
+    $new_item_data = $request->input('newItemData');
+    $save_succeded = HusmusenItem::update_from_array_data($item_to_update, $new_item_data);
 
-    if (!$saveSucceded) {
+    if (!$save_succeded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
@@ -302,13 +302,13 @@ Route::post('/1.0.0/item/edit', function (Request $request) {
             "%s '%s' updated item with ID '%s'!",
             $request->get('auth_is_admin') ? 'Admin' : 'User',
             $request->get('auth_username'),
-            $itemToUpdate->itemID
+            $item_to_update->itemID
         )
     );
 
     // TODO: I don't know if this data will be changed or not.
     // Depends on if it is passed by reference or value... (Check!)
-    return json_encode($itemToUpdate);
+    return json_encode($item_to_update);
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/item/mark', function (Request $request) {
@@ -347,17 +347,17 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
 })->middleware('auth:user');
 
 Route::post('/1.0.0/file/new', function (Request $request) {
-    $fileToCreate = HusmusenFile::from_array_data($request->all());
-    $saveSucceded = $fileToCreate->save();
+    $file_to_create = HusmusenFile::from_array_data($request->all());
+    $save_succeded = $file_to_create->save();
 
-    if (!$saveSucceded) {
+    if (!$save_succeded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file metadata!');
     }
 
     $base64_image = $request->input('fileDataURL');
-    @list($fileToCreate->type, $file_data) = explode(';', $base64_image);
+    @list($file_to_create->type, $file_data) = explode(';', $base64_image);
     @list(, $file_data) = explode(',', $file_data);
-    Storage::disk('files')->put($fileToCreate->fileID, base64_decode($file_data));
+    Storage::disk('files')->put($file_to_create->fileID, base64_decode($file_data));
 
     HusmusenLog::write(
         'Database',
@@ -365,11 +365,11 @@ Route::post('/1.0.0/file/new', function (Request $request) {
             "%s '%s' created file with ID '%s'!",
             $request->get('auth_is_admin') ? 'Admin' : 'User',
             $request->get('auth_username'),
-            $fileToCreate->fileID
+            $file_to_create->fileID
         )
     );
 
-    return json_encode($fileToCreate);
+    return json_encode($file_to_create);
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/edit/', function (Request $request) {
@@ -381,9 +381,9 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
     }
 
     $newFileData = $request->input('newFileData');
-    $saveSucceded = HusmusenFile::update_from_array_data($fileToUpdate, $newFileData);
+    $save_succeded = HusmusenFile::update_from_array_data($fileToUpdate, $newFileData);
 
-    if (!$saveSucceded) {
+    if (!$save_succeded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
     }
 
