@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Yaml\Yaml;
 
+require __DIR__.'/setup.php';
+
 /*
  * |--------------------------------------------------------------------------
  * | Web Routes
@@ -152,9 +154,3 @@ Route::get('/app/control_panel/edit_dbinfo', function () {
 Route::get('/app/control_panel/log', function () {
     return view('control_panel.log');
 });
-
-if (env('APP_DEBUG', false)) {
-    Route::get('/app/setup', function () {
-        return view('item');
-    });
-}

@@ -97,6 +97,13 @@ a {
     color: var(--link-color);
 }
 
+hr {
+    margin: 1rem auto;
+    width: 60%;
+    border: 0 none transparent;
+    border-top: 5px dotted var(--muted-color);
+}
+
 .muted {
     color: var(--muted-color);
 }
