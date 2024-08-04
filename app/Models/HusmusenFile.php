@@ -46,8 +46,6 @@ class HusmusenFile extends Model
             $file->description = $fromData['description'];
             $file->license = $fromData['license'];
             $file->fileID = (string) Str::orderedUuid();
-            $file->addedAt = $fromData['addedAt'] ?? null;
-            // $file->updatedAt = $fromData['updatedAt'] ?? null;
             $file->relatedItem = $fromData['relatedItem'] ?? null;
             // Not setting files, since that's a relation.
             return $file;

@@ -115,8 +115,22 @@ Route::get('/app/control_panel/edit_item', function (Request $request) {
     return view('control_panel.edit_item', ['itemID' => $id, 'itemAsYAML' => $item_as_yaml]);
 });
 
-Route::get('/app/control_panel/edit_file', function () {
-    return view('control_panel.edit_file');
+Route::get('/app/control_panel/edit_file', function (Request $request) {
+    $id = $request->query('fileID');
+    if (!$id) {
+        return view('control_panel.edit_file', ['err' => 'No fileID specified.']);
+    }
+
+    $file = HusmusenFile::find($id);
+    if (!$file) {
+        return view('control_panel.edit_file', ['err' => 'File not found.']);
+    }
+
+    $file = $file->toArray();
+
+    $file_as_yaml = Yaml::dump($file, 2, 4);
+
+    return view('control_panel.edit_file', ['fileID' => $id, 'fileAsYAML' => $file_as_yaml]);
 });
 
 Route::get('/app/control_panel/edit_keywords', function () {

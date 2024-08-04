@@ -381,7 +381,7 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
     }
 
     $newFileData = $request->input('newFileData');
-    $saveSucceded = HusmusenItem::update_from_array_data($fileToUpdate, $newFileData);
+    $saveSucceded = HusmusenFile::update_from_array_data($fileToUpdate, $newFileData);
 
     if (!$saveSucceded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
@@ -413,6 +413,9 @@ Route::post('/1.0.0/file/delete', function (Request $request) {
         return HusmusenError::SendError(400, 'ERR_FILE_NOT_FOUND', "That item doesn't exist!");
     }
 
+    $file_path = join_paths(base_path('data/files'), $id);
+    File::delete($file_path);
+
     HusmusenFile::destroy($id);
 
     // FIXME: remove related file data in `data/files`.
@@ -436,7 +439,15 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
         return HusmusenError::SendError(400, 'ERR_OBJECT_NOT_FOUND', "That item doesn't exist!");
     }
 
-    HusmusenItem::destroy($id);  // TODO: remove related files.
+    $files = HusmusenFile::all()->where('relatedItem', '==', $id);
+
+    foreach ($files as $file) {
+        $file_path = join_paths(base_path('data/files'), $file->fileID);
+        File::delete($file_path);
+        HusmusenFile::destroy($file->fileID);
+    };
+
+    HusmusenItem::destroy($id);
     HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->query('is_admin')) ? 'Admin' : 'User', $request->query('auth_username'), $id));
     return $item;
 })->middleware('auth:admin');
