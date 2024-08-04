@@ -296,9 +296,11 @@ editKeywordsForm?.addEventListener(
                 method: editKeywordsForm.getAttribute("method"),
                 headers: {
                     "Husmusen-Access-Token": localStorage.getItem("api-token"),
-                    "Content-Type": "application/yaml"
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify(payload)
+                body: {
+                    keywords: JSON.stringify(payload)
+                }
             }
         )
             .then(checkSuccess)

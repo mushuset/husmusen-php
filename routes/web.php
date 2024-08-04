@@ -3,6 +3,7 @@
 use App\Models\HusmusenDBInfo;
 use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
+use App\Models\HusmusenKeyword;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -69,7 +70,7 @@ Route::get('/app/file/{id}', function (string $id) {
 });
 
 Route::get('/app/keywords', function () {
-    return view('keywords');
+    return view('keywords', ['keywords' => HusmusenKeyword::get_all()]);
 });
 
 Route::get('/app/db_info', function () {
@@ -138,7 +139,7 @@ Route::get('/app/control_panel/edit_file', function (Request $request) {
 });
 
 Route::get('/app/control_panel/edit_keywords', function () {
-    return view('control_panel.edit_keywords');
+    return view('control_panel.edit_keywords', ['keywordsAsText' => HusmusenKeyword::get_all_as_edit_friendly_format()]);
 });
 
 Route::get('/app/control_panel/edit_dbinfo', function () {
