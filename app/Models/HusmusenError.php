@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Http\JsonResponse;
-
 class HusmusenError
 {
     public string $errorCode;
@@ -15,10 +13,10 @@ class HusmusenError
         $this->errorDescription = $errorDescription;
     }
 
-    public static function SendError(int $httpStatusCode, string $errorCode, string $errorDescription): JsonResponse
+    public static function SendError(int $httpStatusCode, string $errorCode, string $errorDescription)
     {
         $error = new HusmusenError($errorCode, $errorDescription);
 
-        return response()->json($error, $httpStatusCode);
+        return response_handler($error, $httpStatusCode, request());
     }
 }

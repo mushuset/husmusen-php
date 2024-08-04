@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -160,7 +159,7 @@ class HusmusenItem extends Model
         return $id->itemID + 1;
     }
 
-    public static function search_v1_0_0(string|array $types, string|array $freetext, string|array $keywords, string|array $keyword_mode, string|array $order_by, string|array $reverse): JsonResponse
+    public static function search_v1_0_0(string|array $types, string|array $freetext, string|array $keywords, string|array $keyword_mode, string|array $order_by, string|array $reverse)
     {
         // Filter for only valid types.
         $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);  // Make sure `types` isn't an array already, before splitting it into one.
@@ -209,13 +208,13 @@ class HusmusenItem extends Model
         $magic_relevance_sql = "((MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) - 1) / 3";
         $magic_relevance_search_sql = null != $freetext ? "AND (MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) OR MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE))" : '';
 
-        return response()->json(DB::select("
+        return response_handler(DB::select("
         SELECT *, ($magic_relevance_sql) AS relevance
             FROM husmusen_items
             WHERE type IN $types_sql
             $keyword_search_sql
             $magic_relevance_search_sql
             ORDER BY $order_by_sane $should_reverse_order
-        "));
+        "), request());
     }
 }

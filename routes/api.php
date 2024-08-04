@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response as FacadeResponse;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Yaml\Yaml;
 
 use function Illuminate\Filesystem\join_paths;
 
@@ -37,6 +38,17 @@ use function Illuminate\Filesystem\join_paths;
 //     return $request->user();
 // });
 
+function response_handler($data, $request, $status = 200)
+{
+    $output_format = $request->header('Husmusen-Output-Format', 'application/json');
+
+    if ('application/yaml' == $output_format) {
+        return FacadeResponse::make(Yaml::dump(json_decode(json_encode($data), true), 2, 4), $status, ['Content-Type' => 'application/yaml']);
+    } else {
+        return FacadeResponse::make(json_encode($data), $status, ['Content-Type' => 'application/json']);
+    }
+}
+
 /*
  * PUBLIC ROUTES
  */
@@ -44,7 +56,7 @@ use function Illuminate\Filesystem\join_paths;
 Route::get('/db_info', function () {
     $db_info = HusmusenDBInfo::get_db_info();
 
-    return response()->json($db_info);
+    return response_handler($db_info, request());
 });
 
 Route::get('/db_info/version', function () {
@@ -77,7 +89,7 @@ Route::get('/1.0.0/item/info/{id}', function (string $id) {
         return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
     }
 
-    return $item;
+    return response_handler($item, request());
 });
 
 Route::get('/1.0.0/file/get/{id}', function (string $id) {
@@ -100,11 +112,11 @@ Route::get('/1.0.0/file/info/{id}', function (string $id) {
         return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
     }
 
-    return $file;
+    return response_handler($file, request());
 });
 
 Route::get('/1.0.0/keyword', function () {
-    return HusmusenKeyword::get_all();
+    return response_handler(HusmusenKeyword::get_all(), request());
 });
 
 /*
@@ -149,7 +161,7 @@ Route::post('/auth/login', function (Request $request) {
 Route::post('/auth/who', function (Request $request) {
     $token = $request->header('Husmusen-Access-Token');
 
-    return HusmusenUser::decode_token($token);
+    return response_handler(HusmusenUser::decode_token($token), request());
 })->middleware('auth:user');
 
 Route::post('/auth/new', function (Request $request) {
@@ -187,7 +199,7 @@ Route::post('/auth/new', function (Request $request) {
         )
     );
 
-    return response()->json($user);
+    return response_handler(response()->json($user), request());
 })->middleware('auth:admin');
 
 Route::post('/auth/delete', function (Request $request) {
@@ -220,7 +232,7 @@ Route::post('/auth/delete', function (Request $request) {
         )
     );
 
-    return response()->json([$username]);
+    return response_handler([$username], request());
 })->middleware('auth:admin');
 
 Route::post('/auth/change_password', function (Request $request) {
@@ -251,7 +263,7 @@ Route::post('/auth/change_password', function (Request $request) {
         ->where('username', $who->sub)
         ->update(['password' => Hash::make($new_password)]);
 
-    return response()->json(['username' => $who->username, 'password' => $new_password]);
+    return response_handler(['username' => $who->username, 'password' => $new_password], request());
 })->middleware('auth:user');
 
 if (env('APP_DEBUG', false)) {
@@ -302,7 +314,7 @@ Route::post('/1.0.0/item/new', function (Request $request) {
         )
     );
 
-    return json_encode($item_to_create);
+    return response_handler($item_to_create, request());
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/item/edit', function (Request $request) {
@@ -332,7 +344,7 @@ Route::post('/1.0.0/item/edit', function (Request $request) {
 
     // TODO: I don't know if this data will be changed or not.
     // Depends on if it is passed by reference or value... (Check!)
-    return json_encode($item_to_update);
+    return response_handler($item_to_update, request());
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/item/mark', function (Request $request) {
@@ -371,7 +383,7 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
         )
     );
 
-    return response()->json($item);
+    return response_handler($item, request());
 })->middleware('auth:user');
 
 Route::post('/1.0.0/file/new', function (Request $request) {
@@ -397,19 +409,19 @@ Route::post('/1.0.0/file/new', function (Request $request) {
         )
     );
 
-    return json_encode($file_to_create);
+    return response_handler($file_to_create, request());
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/edit/', function (Request $request) {
     $fileID = $request->input('fileID');
-    $fileToUpdate = HusmusenFile::find($fileID);
+    $file_to_update = HusmusenFile::find($fileID);
 
-    if (!$fileToUpdate) {
+    if (!$file_to_update) {
         return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
     }
 
     $newFileData = $request->input('newFileData');
-    $save_succeded = HusmusenFile::update_from_array_data($fileToUpdate, $newFileData);
+    $save_succeded = HusmusenFile::update_from_array_data($file_to_update, $newFileData);
 
     if (!$save_succeded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
@@ -421,13 +433,13 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
             "%s '%s' updated file with ID '%s'!",
             $request->get('auth_is_admin') ? 'Admin' : 'User',
             $request->get('auth_username'),
-            $fileToUpdate->fileID
+            $file_to_update->fileID
         )
     );
 
     // TODO: I don't know if this data will be changed or not.
     // Depends on if it is passed by reference or value... (Check!)
-    return json_encode($fileToUpdate);
+    return response_handler($file_to_update, request());
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/delete', function (Request $request) {
@@ -446,18 +458,16 @@ Route::post('/1.0.0/file/delete', function (Request $request) {
 
     HusmusenFile::destroy($id);
 
-    // FIXME: remove related file data in `data/files`.
-
     HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->get('auth_is_admin')) ? 'Admin' : 'User', $request->get('auth_username'), $id));
 
-    return $file;
+    return response_handler($file, request());
 })->middleware('auth:user')->middleware('yaml_parser');
 
 /*
  * PROTECTED ROUTES (ADMIN ONLY)
  */
 Route::post('/db_info', function (Request $request) {
-    return HusmusenDBInfo::update_from_array_data($request->all());
+    return response_handler(HusmusenDBInfo::update_from_array_data($request->all()), request());
 })->middleware('auth:admin')->middleware('yaml_parser');
 
 Route::post('/1.0.0/item/delete', function (Request $request) {
@@ -482,7 +492,7 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
     HusmusenItem::destroy($id);
     HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->get('auth_is_admin')) ? 'Admin' : 'User', $request->get('auth_username'), $id));
 
-    return $item;
+    return response_handler($item, request());
 })->middleware('auth:admin');
 
 Route::post('/1.0.0/keyword', function (Request $request) {
@@ -496,7 +506,7 @@ Route::post('/1.0.0/keyword', function (Request $request) {
         return HusmusenError::SendError(400, 'ERR_UNKNOWN_ERROR', 'There was an error saving the keywords...');
     }
 
-    return response()->json(HusmusenKeyword::get_all());
+    return response_handler(HusmusenKeyword::get_all(), request());
 })->middleware('auth:admin')->middleware('yaml_parser');
 
 Route::get('/1.0.0/log/get', function (Request $request) {
@@ -505,5 +515,5 @@ Route::get('/1.0.0/log/get', function (Request $request) {
         return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
     }
 
-    return response()->json(HusmusenLog::orderBy('timestamp')->get());
+    return response_handler(HusmusenLog::orderBy('timestamp')->get(), request());
 })->middleware('auth:admin');
