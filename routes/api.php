@@ -486,7 +486,15 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
 })->middleware('auth:admin');
 
 Route::post('/1.0.0/keyword', function (Request $request) {
-    HusmusenKeyword::update_keywords($request->input('keywords'));
+    try {
+        $keywords = array_map(
+            fn ($keyword): array => (array) HusmusenKeyword::from_array_data($keyword),
+            $request->input('keywords')
+        );
+        HusmusenKeyword::update_keywords($keywords);
+    } catch (Throwable $th) {
+        return HusmusenError::SendError(400, 'ERR_UNKNOWN_ERROR', 'There was an error saving the keywords...');
+    }
 
     return response()->json(HusmusenKeyword::get_all());
 })->middleware('auth:admin')->middleware('yaml_parser');
