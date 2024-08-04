@@ -5,7 +5,6 @@ use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Yaml\Yaml;
@@ -27,11 +26,13 @@ Route::get('/', function () {
 
 Route::get('/app', function (Request $request) {
     $queries = $request->query();
+
     return view('landing', ['queries' => $queries]);
 });
 
 Route::get('/app/search', function (Request $request) {
     $queries = $request->query();
+
     return view('search', ['queries' => $queries]);
 });
 
@@ -73,6 +74,7 @@ Route::get('/app/keywords', function () {
 
 Route::get('/app/db_info', function () {
     $db_info = HusmusenDBInfo::get_db_info();
+
     return view('db_info', ['db_info' => $db_info]);
 });
 
@@ -95,6 +97,7 @@ Route::get('/app/control_panel/new_item', function (Request $request) {
     }
 
     $next_item_id = HusmusenItem::get_next_item_id();
+
     return view('control_panel.new_item', ['next_item_id' => $next_item_id]);
 });
 
@@ -112,6 +115,7 @@ Route::get('/app/control_panel/edit_item', function (Request $request) {
     $item = $item->toArray();
 
     $item_as_yaml = Yaml::dump($item, 2, 4);
+
     return view('control_panel.edit_item', ['itemID' => $id, 'itemAsYAML' => $item_as_yaml]);
 });
 

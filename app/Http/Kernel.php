@@ -33,7 +33,7 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $middlewareAliases = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'yaml_parser' => \App\Http\Middleware\YamlParser::class,
+        'auth' => Middleware\Authenticate::class,
+        'yaml_parser' => Middleware\YamlParser::class,
     ];
 }

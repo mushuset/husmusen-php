@@ -6,16 +6,15 @@ use App\Models\HusmusenError;
 use App\Models\HusmusenUser;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Closure;
 
 class Authenticate
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response) $next
      */
-    public function handle(Request $request, Closure $next, string $required_permission): Response
+    public function handle(Request $request, \Closure $next, string $required_permission): Response
     {
         $token = $request->header('Husmusen-Access-Token');
         if (!$token) {
@@ -29,7 +28,7 @@ class Authenticate
 
         $token_info = HusmusenUser::decode_token($token);
 
-        if ($required_permission === 'admin') {
+        if ('admin' === $required_permission) {
             if (!$token_info->admin) {
                 return HusmusenError::SendError(401, 'ERR_NOT_ALLOWED', 'You need to be an admin to do this!');
             }

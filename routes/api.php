@@ -7,7 +7,6 @@ use App\Models\HusmusenItem;
 use App\Models\HusmusenLog;
 use App\Models\HusmusenUser;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -43,16 +42,19 @@ use function Illuminate\Filesystem\join_paths;
 
 Route::get('/db_info', function () {
     $db_info = HusmusenDBInfo::get_db_info();
+
     return response()->json($db_info);
 });
 
 Route::get('/db_info/version', function () {
     $db_info = HusmusenDBInfo::get_db_info();
+
     return response($db_info->protocolVersion)->header('Content-Type', 'text/plain');
 });
 
 Route::get('/db_info/versions', function () {
     $db_info = HusmusenDBInfo::get_db_info();
+
     return response(join(',', $db_info->protocolVersions))->header('Content-Type', 'text/plain');
 });
 
@@ -73,6 +75,7 @@ Route::get('/1.0.0/item/info/{id}', function (string $id) {
     if (!$item) {
         return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
     }
+
     return $item;
 });
 
@@ -80,8 +83,9 @@ Route::get('/1.0.0/file/get/{id}', function (string $id) {
     $file = HusmusenFile::find($id);
     $file_path = join_paths(base_path('data/files'), $id);
 
-    if (!$file)
+    if (!$file) {
         return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
+    }
 
     $response = FacadeResponse::make(File::get($file_path));
     $response->header('Content-Type', $file->type);
@@ -94,6 +98,7 @@ Route::get('/1.0.0/file/info/{id}', function (string $id) {
     if (!$file) {
         return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
     }
+
     return $file;
 });
 
@@ -108,21 +113,25 @@ Route::post('/auth/login', function (Request $request) {
     $username = $request->input('username');
     $password = $request->input('password');
 
-    if (!$username)
+    if (!$username) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+    }
 
-    if (!$password)
+    if (!$password) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+    }
 
     $user = HusmusenUser::find($username);
 
-    if (!$user)
+    if (!$user) {
         return HusmusenError::SendError(500, 'ERR_USER_NOT_FOUND', 'There was an error looking up the user!');
+    }
 
     $pass_is_valid = Hash::check($password, $user->password);
 
-    if (!$pass_is_valid)
+    if (!$pass_is_valid) {
         return HusmusenError::SendError(400, 'ERR_INVALID_PASSWORD', 'Incorrect password.');
+    }
 
     // 4 hours in the future.
     $valid_until = time() + 14400;
@@ -132,12 +141,13 @@ Route::post('/auth/login', function (Request $request) {
 
     return response()->json([
         'token' => $token,
-        'validUntil' => date('c', $valid_until)  // Format date as per ISO 8601.
+        'validUntil' => date('c', $valid_until),  // Format date as per ISO 8601.
     ]);
 });
 
 Route::post('/auth/who', function (Request $request) {
     $token = $request->header('Husmusen-Access-Token');
+
     return HusmusenUser::decode_token($token);
 })->middleware('auth:user');
 
@@ -146,21 +156,24 @@ Route::post('/auth/new', function (Request $request) {
     $password = $request->input('password');
     $is_admin = $request->input('isAdmin');
 
-    if (!$username)
+    if (!$username) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+    }
 
-    if (!$password)
+    if (!$password) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+    }
 
     $user = HusmusenUser::find($username);
 
-    if ($user)
+    if ($user) {
         return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
+    }
 
     $user = HusmusenUser::create([
         'username' => $username,
         'password' => Hash::make($password),
-        'isAdmin' => $is_admin == 'on',
+        'isAdmin' => 'on' == $is_admin,
     ]);
 
     HusmusenLog::write(
@@ -169,7 +182,7 @@ Route::post('/auth/new', function (Request $request) {
             "'%s' created an account with the username '%s' (%s)!",
             $request->get('auth_username'),
             $username,
-            $is_admin == 'on' ? 'Admin' : 'User',
+            'on' == $is_admin ? 'Admin' : 'User',
         )
     );
 
@@ -179,19 +192,23 @@ Route::post('/auth/new', function (Request $request) {
 Route::post('/auth/delete', function (Request $request) {
     $username = $request->input('username');
 
-    if (!$username)
+    if (!$username) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+    }
 
-    if ($username == $request->get('auth_username'))
+    if ($username == $request->get('auth_username')) {
         return HusmusenError::SendError(402, 'ERR_FORBIDDEN_ACTION', 'You cannot delete yourself!');
+    }
 
     $user = HusmusenUser::find($username);
 
-    if (!$user)
+    if (!$user) {
         return HusmusenError::SendError(400, 'ERR_USER_NOT_FOUND', 'There is no user with that username!');
+    }
 
-    if (!$user->delete())
+    if (!$user->delete()) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'There was an error deleting that user!');
+    }
 
     HusmusenLog::write(
         'Database',
@@ -209,11 +226,13 @@ Route::post('/auth/change_password', function (Request $request) {
     $current_password = $request->input('currentPassword');
     $new_password = $request->input('newPassword');
 
-    if (!$current_password)
+    if (!$current_password) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'currentPassword'.");
+    }
 
-    if (!$new_password)
+    if (!$new_password) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'newPassword'.");
+    }
 
     // This will be safe, it will always return a valid user.
     // The middleware will make sure that there's never a non-logged-in user here.
@@ -223,14 +242,15 @@ Route::post('/auth/change_password', function (Request $request) {
     $who = HusmusenUser::find($decoded_token->sub);
 
     $password_matches = Hash::check($current_password, $who->password);
-    if (!$password_matches)
+    if (!$password_matches) {
         return HusmusenError::SendError(401, 'ERR_INVALID_PASSWORD', "Your provided 'currentPassword' is not correct!");
+    }
 
     DB::table('husmusen_users')
         ->where('username', $who->sub)
         ->update(['password' => Hash::make($new_password)]);
 
-    return response()->json(['username' => $who->username, 'password' => ($new_password)]);
+    return response()->json(['username' => $who->username, 'password' => $new_password]);
 })->middleware('auth:user');
 
 if (env('APP_DEBUG', false)) {
@@ -238,16 +258,19 @@ if (env('APP_DEBUG', false)) {
         $username = $request->input('username');
         $password = $request->input('password');
 
-        if (!$username)
+        if (!$username) {
             return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+        }
 
-        if (!$password)
+        if (!$password) {
             return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+        }
 
         $user = HusmusenUser::find($username);
 
-        if ($user)
+        if ($user) {
             return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
+        }
 
         HusmusenUser::create([
             'username' => $username,
@@ -315,22 +338,26 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
     $item_id = $request->input('itemID');
     $reason = $request->input('reason');
 
-    if (!$item_id)
+    if (!$item_id) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
+    }
 
-    if (!$reason)
+    if (!$reason) {
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'reason'.");
+    }
 
     $item = HusmusenItem::find($item_id);
-    if (!$item)
+    if (!$item) {
         return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
+    }
 
     $item->isExpired = true;
     $item->expireReason = $request->input('reason');
 
     $save_succeded = $item->save();
-    if (!$save_succeded)
+    if (!$save_succeded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+    }
 
     HusmusenLog::write(
         'Database',
@@ -421,6 +448,7 @@ Route::post('/1.0.0/file/delete', function (Request $request) {
     // FIXME: remove related file data in `data/files`.
 
     HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->get('auth_is_admin')) ? 'Admin' : 'User', $request->get('auth_username'), $id));
+
     return $file;
 })->middleware('auth:user')->middleware('yaml_parser');
 
@@ -448,10 +476,11 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
         $file_path = join_paths(base_path('data/files'), $file->fileID);
         File::delete($file_path);
         HusmusenFile::destroy($file->fileID);
-    };
+    }
 
     HusmusenItem::destroy($id);
     HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->get('auth_is_admin')) ? 'Admin' : 'User', $request->get('auth_username'), $id));
+
     return $item;
 })->middleware('auth:admin');
 
@@ -462,5 +491,6 @@ Route::get('/1.0.0/log/get', function (Request $request) {
     if (in_array($reverse, ['on', '1', 'true'])) {
         return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
     }
+
     return response()->json(HusmusenLog::orderBy('timestamp')->get());
 })->middleware('auth:admin');

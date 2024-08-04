@@ -8,13 +8,14 @@ use Illuminate\Support\Str;
 
 /**
  * This class represents file metadata stored in the database.
- * @property string $name Human readable name for the file.
- * @property string $type MIME type of a file. E.g. 'image/png'
- * @property string $license License and ownership information.
+ *
+ * @property string            $name        Human readable name for the file.
+ * @property string            $type        MIME type of a file. E.g. 'image/png'
+ * @property string            $license     License and ownership information.
  * @property \Ramsey\Uuid\Uuid $fileID
- * @property \DateTime $addedAt
- * @property \DateTime $updatedAt
- * @property integer $relatedItem The item the file is linked to.
+ * @property \DateTime         $addedAt
+ * @property \DateTime         $updatedAt
+ * @property int               $relatedItem The item the file is linked to.
  */
 class HusmusenFile extends Model
 {
@@ -32,10 +33,10 @@ class HusmusenFile extends Model
     public $incrementing = false;
 
     // Define the name of the columns that handles creation time.
-    const CREATED_AT = 'addedAt';
+    public const CREATED_AT = 'addedAt';
 
     // Define the name of the columns that handles modification time.
-    const UPDATED_AT = 'updatedAt';
+    public const UPDATED_AT = 'updatedAt';
 
     public static function from_array_data(array $fromData): HusmusenFile
     {
@@ -47,6 +48,7 @@ class HusmusenFile extends Model
             $file->license = $fromData['license'];
             $file->fileID = (string) Str::orderedUuid();
             $file->relatedItem = $fromData['relatedItem'] ?? null;
+
             // Not setting files, since that's a relation.
             return $file;
         } catch (\Throwable $th) {
@@ -60,6 +62,7 @@ class HusmusenFile extends Model
             $file->name = $fromData['name'];
             $file->license = $fromData['license'];
             $file->relatedItem = $fromData['relatedItem'];
+
             // Not setting files, since that's a relation.
             return $file->save();
         } catch (\Throwable $th) {

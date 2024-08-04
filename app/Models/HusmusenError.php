@@ -18,6 +18,7 @@ class HusmusenError
     public static function SendError(int $httpStatusCode, string $errorCode, string $errorDescription): JsonResponse
     {
         $error = new HusmusenError($errorCode, $errorDescription);
+
         return response()->json($error, $httpStatusCode);
     }
 }
