@@ -26,13 +26,13 @@ Route::get('/', function () {
 });
 
 Route::get('/app', function (Request $request) {
-    $queries = $request->query();
+    $queries = $request->all();
 
     return view('landing', ['queries' => $queries]);
 });
 
 Route::get('/app/search', function (Request $request) {
-    $queries = $request->query();
+    $queries = $request->all();
 
     return view('search', ['queries' => $queries]);
 });
