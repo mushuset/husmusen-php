@@ -19,7 +19,7 @@ class YamlParser
             $requestYamlData = Yaml::parse($request->getContent());
 
             foreach ($requestYamlData as $key => $value) {
-                request()->instance()->request->set($key, $value);
+                $request->instance()->request->set($key, $value);
             }
         }
 

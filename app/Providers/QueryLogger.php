@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class QueryLogger extends ServiceProvider
@@ -22,11 +23,11 @@ class QueryLogger extends ServiceProvider
     {
         if (env('APP_DEBUG', false)) {
             DB::listen(function (QueryExecuted $query) {
-                \Log::debug("\nRan query:");
-                \Log::debug($query->sql);
-                \Log::debug('Bound arguments: ');
-                \Log::debug(join(', ', $query->bindings));
-                \Log::debug("Took $query->time ms. ");
+                Log::debug("\nRan query:");
+                Log::debug($query->sql);
+                Log::debug('Bound arguments: ');
+                Log::debug(join(', ', $query->bindings));
+                Log::debug("Took $query->time ms. ");
             });
         }
     }
