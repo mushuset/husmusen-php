@@ -7,8 +7,15 @@ use App\Models\HusmusenItem;
 use App\Models\HusmusenLog;
 use App\Models\HusmusenUser;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response as FacadeResponse;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+
+use function Illuminate\Filesystem\join_paths;
 
 /*
  * |--------------------------------------------------------------------------
@@ -70,8 +77,16 @@ Route::get('/1.0.0/item/info/{id}', function (string $id) {
 });
 
 Route::get('/1.0.0/file/get/{id}', function (string $id) {
-    // TODO: Return file data!
-    return 'NOT IMPLEMENTED';
+    $file = HusmusenFile::find($id);
+    $file_path = join_paths(base_path('data/files'), $id);
+
+    if (!$file)
+        return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
+
+    $response = FacadeResponse::make(File::get($file_path));
+    $response->header('Content-Type', $file->type);
+
+    return $response;
 });
 
 Route::get('/1.0.0/file/info/{id}', function (string $id) {
@@ -79,6 +94,7 @@ Route::get('/1.0.0/file/info/{id}', function (string $id) {
     if (!$file) {
         return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
     }
+    return $file;
 });
 
 Route::get('/1.0.0/keyword', function () {
@@ -151,7 +167,7 @@ Route::post('/auth/new', function (Request $request) {
         'Database',
         sprintf(
             "'%s' created an account with the username '%s' (%s)!",
-            request()->query('auth_username'),
+            $request->query('auth_username'),
             $username,
             $isAdmin == 'on' ? 'Admin' : 'User',
         )
@@ -166,7 +182,7 @@ Route::post('/auth/delete', function (Request $request) {
     if (!$username)
         return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
 
-    if ($username == request()->query('auth_username'))
+    if ($username == $request->query('auth_username'))
         return HusmusenError::SendError(402, 'ERR_FORBIDDEN_ACTION', 'You cannot delete yourself!');
 
     $user = HusmusenUser::find($username);
@@ -181,7 +197,7 @@ Route::post('/auth/delete', function (Request $request) {
         'Database',
         sprintf(
             "Admin '%s' deleted the user '%s'!",
-            request()->query('auth_username'),
+            $request->query('auth_username'),
             $username,
         )
     );
@@ -244,8 +260,8 @@ if (env('APP_DEBUG', false)) {
 /*
  * PROTECTED ROUTES
  */
-Route::post('/1.0.0/item/new', function () {
-    $itemToCreate = HusmusenItem::from_array_data(request()->all());
+Route::post('/1.0.0/item/new', function (Request $request) {
+    $itemToCreate = HusmusenItem::from_array_data($request->all());
     $saveSucceded = $itemToCreate->save();
 
     if (!$saveSucceded) {
@@ -256,8 +272,8 @@ Route::post('/1.0.0/item/new', function () {
         'Database',
         sprintf(
             "%s '%s' created item with ID '%s'!",
-            request()->query('is_admin') ? 'Admin' : 'User',
-            request()->query('auth_username'),
+            $request->query('is_admin') ? 'Admin' : 'User',
+            $request->query('auth_username'),
             $itemToCreate->itemID
         )
     );
@@ -265,15 +281,15 @@ Route::post('/1.0.0/item/new', function () {
     return json_encode($itemToCreate);
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/item/edit', function () {
-    $itemID = request()->input('itemID');
+Route::post('/1.0.0/item/edit', function (Request $request) {
+    $itemID = $request->input('itemID');
     $itemToUpdate = HusmusenItem::find($itemID);
 
     if (!$itemToUpdate) {
         return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
     }
 
-    $newItemData = request()->input('newItemData');
+    $newItemData = $request->input('newItemData');
     $saveSucceded = HusmusenItem::update_from_array_data($itemToUpdate, $newItemData);
 
     if (!$saveSucceded) {
@@ -284,8 +300,8 @@ Route::post('/1.0.0/item/edit', function () {
         'Database',
         sprintf(
             "%s '%s' updated item with ID '%s'!",
-            request()->query('is_admin') ? 'Admin' : 'User',
-            request()->query('auth_username'),
+            $request->query('is_admin') ? 'Admin' : 'User',
+            $request->query('auth_username'),
             $itemToUpdate->itemID
         )
     );
@@ -320,8 +336,8 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
         'Database',
         sprintf(
             "%s '%s' marked item with ID '%s' as expired with the reason '%s'!",
-            request()->query('is_admin') ? 'Admin' : 'User',
-            request()->query('auth_username'),
+            $request->query('is_admin') ? 'Admin' : 'User',
+            $request->query('auth_username'),
             $item_id,
             $reason,
         )
@@ -331,40 +347,40 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
 })->middleware('auth:user');
 
 Route::post('/1.0.0/file/new', function (Request $request) {
-    $fileToCreate = HusmusenFile::from_array_data(request()->all());
+    $fileToCreate = HusmusenFile::from_array_data($request->all());
     $saveSucceded = $fileToCreate->save();
 
     if (!$saveSucceded) {
         return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file metadata!');
     }
 
-    $request->file('avatar')->storeAs(
-        'files', $fileToCreate->fileID
-    );
+    $base64_image = $request->input('fileDataURL');
+    @list($fileToCreate->type, $file_data) = explode(';', $base64_image);
+    @list(, $file_data) = explode(',', $file_data);
+    Storage::disk('files')->put($fileToCreate->fileID, base64_decode($file_data));
 
     HusmusenLog::write(
         'Database',
         sprintf(
             "%s '%s' created file with ID '%s'!",
-            request()->query('is_admin') ? 'Admin' : 'User',
-            request()->query('auth_username'),
+            $request->query('is_admin') ? 'Admin' : 'User',
+            $request->query('auth_username'),
             $fileToCreate->fileID
         )
     );
 
     return json_encode($fileToCreate);
-
 })->middleware('auth:user')->middleware('yaml_parser');
 
-Route::post('/1.0.0/file/edit/', function () {
-    $fileID = request()->input('fileID');
+Route::post('/1.0.0/file/edit/', function (Request $request) {
+    $fileID = $request->input('fileID');
     $fileToUpdate = HusmusenFile::find($fileID);
 
     if (!$fileToUpdate) {
         return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
     }
 
-    $newFileData = request()->input('newFileData');
+    $newFileData = $request->input('newFileData');
     $saveSucceded = HusmusenItem::update_from_array_data($fileToUpdate, $newFileData);
 
     if (!$saveSucceded) {
@@ -375,8 +391,8 @@ Route::post('/1.0.0/file/edit/', function () {
         'Database',
         sprintf(
             "%s '%s' updated file with ID '%s'!",
-            request()->query('is_admin') ? 'Admin' : 'User',
-            request()->query('auth_username'),
+            $request->query('is_admin') ? 'Admin' : 'User',
+            $request->query('auth_username'),
             $fileToUpdate->fileID
         )
     );
@@ -401,7 +417,7 @@ Route::post('/1.0.0/file/delete', function (Request $request) {
 
     // FIXME: remove related file data in `data/files`.
 
-    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username'), $id));
+    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->query('is_admin')) ? 'Admin' : 'User', $request->query('auth_username'), $id));
     return $file;
 })->middleware('auth:user')->middleware('yaml_parser');
 
@@ -421,14 +437,14 @@ Route::post('/1.0.0/item/delete', function (Request $request) {
     }
 
     HusmusenItem::destroy($id);  // TODO: remove related files.
-    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", (request()->query('is_admin')) ? 'Admin' : 'User', request()->query('auth_username'), $id));
+    HusmusenLog::write('Database', sprintf("%s '%s' deleted item with ID '%d'!", ($request->query('is_admin')) ? 'Admin' : 'User', $request->query('auth_username'), $id));
     return $item;
 })->middleware('auth:admin');
 
 Route::post('/1.0.0/keyword', function () {})->middleware('auth:admin');
 
-Route::get('/1.0.0/log/get', function () {
-    $reverse = request()->query('reverse', 'on');
+Route::get('/1.0.0/log/get', function (Request $request) {
+    $reverse = $request->query('reverse', 'on');
     if (in_array($reverse, ['on', '1', 'true'])) {
         return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
     }

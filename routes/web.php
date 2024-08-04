@@ -59,6 +59,11 @@ Route::get('/app/item/{id}', function (string $id) {
 
 Route::get('/app/file/{id}', function (string $id) {
     $file = HusmusenFile::find($id);
+
+    if (!$file) {
+        return view('file', ['err' => 'File not found!']);
+    }
+
     return view('file', ['file' => $file]);
 });
 
@@ -83,18 +88,18 @@ Route::get('/app/control_panel', function () {
     return view('control_panel.index');
 });
 
-Route::get('/app/control_panel/new_item', function () {
+Route::get('/app/control_panel/new_item', function (Request $request) {
     // type validation
-    if (!in_array(request()->query('type'), HusmusenItem::$valid_types)) {
-        request()->instance()->query->set('type', 'Book');
+    if (!in_array($request->query('type'), HusmusenItem::$valid_types)) {
+        $request->instance()->query->set('type', 'Book');
     }
 
     $next_item_id = HusmusenItem::get_next_item_id();
     return view('control_panel.new_item', ['next_item_id' => $next_item_id]);
 });
 
-Route::get('/app/control_panel/edit_item', function () {
-    $id = request()->query('itemID');
+Route::get('/app/control_panel/edit_item', function (Request $request) {
+    $id = $request->query('itemID');
     if (!$id) {
         return view('control_panel.edit_item', ['err' => 'No itemID specified.']);
     }

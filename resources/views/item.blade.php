@@ -52,12 +52,12 @@
         <p>Typ av fil: {{ $file->type }}</p>
         @if(preg_match('/^image\/.*$/', $file->type))
         <p>Förhandsvisning:</p>
-        <img src="/api/1.0.0/file/get/{{ $file->url->data }}.{{ preg_replace('/(?<=^\w+\/)\w+(?=(\+\S*)?$)/gm', '', $file->type) }}"
+        <img src="/api/1.0.0/file/get/{{ $file->fileID }}"
             alt="{{ $file->description }}">
         @endif
         <p>
             Länkar:
-            <a href="/api/1.0.0/file/get/{{ $file->fileID }}.{{ preg_replace('/(?<=^\w+\/)\w+(?=(\+\S*)?$)/gm', '', $file->type) }}"
+            <a href="/api/1.0.0/file/get/{{ $file->fileID }}"
                 download>Ladda ned!</a>
             <a href="/app/file/{{ $file->fileID }}">Perma-länk.</a>
         </p>

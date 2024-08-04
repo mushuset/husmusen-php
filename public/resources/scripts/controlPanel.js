@@ -100,7 +100,8 @@ fileCreationForm?.addEventListener(
             {
                 method: fileCreationForm.getAttribute("method"),
                 headers: {
-                    "Husmusen-Access-Token": localStorage.getItem("api-token")
+                    "Husmusen-Access-Token": localStorage.getItem("api-token"),
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(payload)
             }
