@@ -285,11 +285,14 @@ if (env('APP_DEBUG', false)) {
             return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
         }
 
-        HusmusenUser::create([
-            'username' => $username,
-            'password' => Hash::make($password),
-            'isAdmin' => true,
-        ]);
+        return response_handler(
+            HusmusenUser::create([
+                'username' => $username,
+                'password' => Hash::make($password),
+                'isAdmin' => true,
+            ]),
+            $request
+        );
     });
 }
 

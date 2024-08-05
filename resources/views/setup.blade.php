@@ -14,7 +14,7 @@
 
 <h2>Steg 1: Information om er instans</h2>
 <p>Fyll i formuläret nedan och klicka sedan på knappen för att spara.</p>
-<form action="/setup/instance-info" method="post">
+<form action="/setup/instance-info" method="post" class="auto-rig">
     <div class="text-inputs">
         <label for="APP_NAME">Instansens namn:</label>
         <input type="text" name="APP_NAME" id="APP_NAME" placeholder="Husmusen på Museet">
@@ -32,8 +32,8 @@
     Ändra informationen nedan så den passar ert museum och klicka sedan på knappen för att spara. Se till att bara ändra
     det som står mellan citat-tecknena!
 </p>
-<form action="/setup/museum-info" method="post">
-    <textarea name="db-info" id="db-info" cols="80" rows="15" style="font-family: monospace">
+<form action="/setup/museum-info" method="post" class="auto-rig" data-is-yaml>
+    <textarea name="yaml" id="yaml" cols="80" rows="15" style="font-family: monospace">
 # Ändra inget från hit ...
 protocolVersion: "1.0.0"
 protocolVersions: [ "1.0.0" ]
@@ -60,7 +60,7 @@ museumDetails:
     Fyll i formuläret nedan och klicka sedan på knappen för att spara. Du bör kunna få den här informationen från ditt
     webbhotell eller IT-ansvarig (eller dylikt) på ditt museum.
 </p>
-<form action="/setup/db-info" method="post">
+<form action="/setup/db-info" method="post" class="auto-rig">
     <div class="text-inputs">
         <label for="DB_CONNECTION">Vilken databasmjukvara använder ni?</label>
         <select name="DB_CONNECTION" id="DB_CONNECTION">
@@ -91,7 +91,7 @@ museumDetails:
 
 <h2>Steg 4: Skapa tabeller</h2>
 <p>Klicka på knappen för att skapa de tabeller i databasen som Husmusen behöver.</p>
-<form>
+<form action="/setup/create-tables" method="post" class="auto-rig">
     <input type="submit" value="Skapa tabeller!" id="create-tables">
 </form>
 <hr>
@@ -100,10 +100,16 @@ museumDetails:
 <form action="/api/auth/debug_admin_creation" method="post" class="auto-rig">
     <div class="text-inputs">
         <label for="username">Användarnamn:</label>
-        <input type="text" name="username" id="username">
+        <input type="text" name="username" id="username" placeholder="Bob">
         <label for="password">Lösenord:</label>
-        <input type="password" name="password" id="password">
+        <input type="password" name="password" id="password" placeholder="SuperHemligt,BraLösenord!78">
     </div>
+
+    <p>Du borde få tillbaka ett meddelende som har med <code
+            style="font-family: monospace; font-size: 1.2em; color: aqua; background-color: black; padding: 3px 6px;">"isAdmin": true</code>
+        mot
+        slutet.</p>
+
     <input type="submit" value="Skapa administratör!">
 </form>
 <hr>
@@ -117,9 +123,52 @@ museumDetails:
     Efter ni har klickat på knappen borde ni inte längre kunna komma åt den här sidan! Om ni gör det har något gått fel,
     och ni bör testa att klicka på knappen igen. Funkar inte det, så börja om er installationsprocess helt från början.
 </p>
-<form action="/setup/done" method="post">
+<form action="/setup/done" method="post" class="auto-rig">
     <input type="submit" value="Jag är klar!">
 </form>
 <hr style="margin-bottom: 30vmin">
+
+<script>
+    // Select all forms that have the `auto-rig` class.
+    const forms = document.querySelectorAll("form.auto-rig")
+    // Make sure said forms are handled in a special way:
+    for (const form of forms) {
+        form.addEventListener(
+            "submit",
+            async (event) => {
+                // Make sure the default way of handling submition is ignored.
+                event.preventDefault()
+
+                // Get all data.
+                const formData = new FormData(form)
+
+                const ifTrueThenJsonElseYaml = !form.hasAttribute("data-is-yaml");
+
+                // Read all keys and values into the `payload` variable.
+                let payload = {}
+                if (ifTrueThenJsonElseYaml) {
+                    formData.forEach((value, key) => payload[key] = value)
+                } else {
+                    payload = formData.get("yaml")
+                }
+
+                // Send a request using the action and method defined in the form-HTML element.
+                // Also, send the payload as the body.
+                fetch(
+                    form.getAttribute("action"),
+                    {
+                        method: form.getAttribute("method"),
+                        headers: {
+                            "Content-Type": ifTrueThenJsonElseYaml ? "application/json" : "application/yaml"
+                        },
+                        body: ifTrueThenJsonElseYaml ? JSON.stringify(payload) : payload
+                    })
+                    .then(response => response.text())
+                    .then(alert)
+                    .catch(err => alert("Error! Information: " + JSON.stringify(err)))
+            }
+        )
+    }
+</script>
 
 @endsection
