@@ -115,7 +115,7 @@ museumDetails:
 </p>
 <p>
     Efter ni har klickat på knappen borde ni inte längre kunna komma åt den här sidan! Om ni gör det har något gått fel,
-    och ni bör testa att klicka på knappen igen. Funkar inte det, så börja om er installationsprocess helt frpån början.
+    och ni bör testa att klicka på knappen igen. Funkar inte det, så börja om er installationsprocess helt från början.
 </p>
 <form action="/setup/done" method="post">
     <input type="submit" value="Jag är klar!">
