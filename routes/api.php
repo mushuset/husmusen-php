@@ -115,8 +115,14 @@ Route::get('/1.0.0/file/info/{id}', function (string $id) {
     return response_handler($file, request());
 });
 
-Route::get('/1.0.0/keyword', function () {
-    return response_handler(HusmusenKeyword::get_all(), request());
+Route::get('/1.0.0/keyword', function (Request $request) {
+    return response_handler(HusmusenKeyword::get_all(), $request);
+});
+
+Route::get('/1.0.0/keyword/{types}', function (Request $request, string $types) {
+    $types_array = explode(',', $types);
+
+    return response_handler(HusmusenKeyword::get_all_of_types($types_array), $request);
 });
 
 /*

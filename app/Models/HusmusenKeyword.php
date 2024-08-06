@@ -41,6 +41,20 @@ class HusmusenKeyword
     }
 
     /**
+     * Gets all keywords of specified item types.
+     *
+     * @param HusmusenItemType[] $types
+     *
+     * @return HusmusenKeyword[]
+     */
+    public static function get_all_of_types(array $types): array
+    {
+        $keywords = HusmusenKeyword::get_all();
+
+        return array_filter($keywords, fn ($type) => in_array($type, $types));
+    }
+
+    /**
      * Updates the keywords list.
      *
      * Do note that this **OVERWERITES** the previous keywords list.
