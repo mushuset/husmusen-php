@@ -31,6 +31,28 @@ class HusmusenKeyword
     }
 
     /**
+     * Creates a proper keywords string to be stored in the database column for keywords.
+     *
+     * @param string           $keywords the user-inputed keyword string representation
+     * @param HusmusenItemType $type     The type of the item of which the keywords belong to. (Needed to filter out unknown keywords.)
+     */
+    public static function make_proper_keywords_string(string $keywords, HusmusenItemType $type): string
+    {
+        $keywords_array = explode(',', $keywords);
+        $keywords_for_type = HusmusenKeyword::get_all_by_types([$type]);
+        $keywords_for_type_as_strings = array_map(fn ($keyword) => $keyword->word, $keywords_for_type);
+
+        // Filter out invalid/unknown keywords
+        $valid_keywords = array_filter($keywords_array, fn ($keyword) => in_array($keyword, $keywords_for_type_as_strings));
+
+        // Sort them alphabetically.
+        // This is required for the keyword item search to function properly.
+        sort($valid_keywords, SORT_STRING);
+
+        return implode(',', $valid_keywords);
+    }
+
+    /**
      * Gets all keywords.
      *
      * @return HusmusenKeyword[]
@@ -50,8 +72,9 @@ class HusmusenKeyword
     public static function get_all_by_types(array $types): array
     {
         $keywords = HusmusenKeyword::get_all();
+        $types_as_strings = array_map(fn ($type) => $type instanceof HusmusenItemType ? $type->value : $type, $types);
 
-        return array_filter($keywords, fn ($type) => in_array($type, $types));
+        return array_filter($keywords, fn ($keyword) => in_array($keyword->type, $types_as_strings));
     }
 
     /**

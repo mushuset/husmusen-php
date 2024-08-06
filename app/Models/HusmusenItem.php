@@ -10,29 +10,29 @@ use Illuminate\Support\Facades\DB;
 /**
  * Represents all possible item types.
  */
-enum HusmusenItemType
+enum HusmusenItemType: string
 {
-    case ArtPiece;
-    case Blueprint;
-    case Book;
-    case Building;
-    case Collection;
-    case Concept;
-    case CulturalEnvironment;
-    case CulturalHeritage;
-    case Document;
-    case Exhibition;
-    case Film;
-    case Group;
-    case HistoricalEvent;
-    case InteractiveResource;
-    case Map;
-    case Organisation;
-    case Person;
-    case Photo;
-    case PhysicalItem;
-    case Sketch;
-    case Sound;
+    case ArtPiece = 'ArtPiece';
+    case Blueprint = 'Blueprint';
+    case Book = 'Book';
+    case Building = 'Building';
+    case Collection = 'Collection';
+    case Concept = 'Concept';
+    case CulturalEnvironment = 'CulturalEnvironment';
+    case CulturalHeritage = 'CulturalHeritage';
+    case Document = 'Document';
+    case Exhibition = 'Exhibition';
+    case Film = 'Film';
+    case Group = 'Group';
+    case HistoricalEvent = 'HistoricalEvent';
+    case InteractiveResource = 'InteractiveResource';
+    case Map = 'Map';
+    case Organisation = 'Organisation';
+    case Person = 'Person';
+    case Photo = 'Photo';
+    case PhysicalItem = 'PhysicalItem';
+    case Sketch = 'Sketch';
+    case Sound = 'Sound';
 }
 
 /**
@@ -84,6 +84,7 @@ class HusmusenItem extends Model
         return $this->hasMany(HusmusenFile::class, 'relatedItem');
     }
 
+    // FIXME: Maybe this can be replaced with `HusmusenItemType`...
     public static $valid_types = [
         'ArtPiece',
         'Blueprint',
@@ -114,7 +115,7 @@ class HusmusenItem extends Model
         try {
             $item->name = $fromData['name'];
             $item->description = $fromData['description'];
-            $item->keywords = $fromData['keywords'];
+            $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
             $item->type = $fromData['type'];
             $item->itemID = $fromData['itemID'];
             $item->addedAt = $fromData['addedAt'] ?? null;
@@ -136,7 +137,7 @@ class HusmusenItem extends Model
         try {
             $item->name = $fromData['name'];
             $item->description = $fromData['description'];
-            $item->keywords = $fromData['keywords'];
+            $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
             $item->type = $fromData['type'];
             $item->itemID = $fromData['itemID'];
             $item->customData = $fromData['customData'] ?? [];
