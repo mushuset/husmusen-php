@@ -3,6 +3,7 @@
 use App\Models\HusmusenDBInfo;
 use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
+use App\Models\HusmusenItemType;
 use App\Models\HusmusenKeyword;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
@@ -100,8 +101,9 @@ Route::get('/app/control_panel/new_item', function (Request $request) {
     }
 
     $next_item_id = HusmusenItem::get_next_item_id();
+    $keywords_for_type = HusmusenKeyword::get_all_by_types([HusmusenItemType::from($request->query('type'))]);
 
-    return view('control_panel.new_item', ['next_item_id' => $next_item_id]);
+    return view('control_panel.new_item', ['next_item_id' => $next_item_id, 'keywords' => $keywords_for_type]);
 });
 
 Route::get('/app/control_panel/edit_item', function (Request $request) {
