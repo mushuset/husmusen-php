@@ -180,7 +180,7 @@ class HusmusenItem extends Model
         });
 
         // Create keyword SQL; slightly magical. :|
-        $keyword_search_sql = 'AND' === $keyword_mode
+        $keyword_search_sql = 'AND' === $keyword_mode_sane
             // If in "AND-mode", use this magic RegEx created here:
             // This also requires the keywords to be sorted alphabetically.
             ? (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(".join('(.*,|)', $valid_keywords).')(?=,|$)\'' : '')
