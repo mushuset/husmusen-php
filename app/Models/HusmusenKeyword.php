@@ -47,7 +47,7 @@ class HusmusenKeyword
      *
      * @return HusmusenKeyword[]
      */
-    public static function get_all_of_types(array $types): array
+    public static function get_all_by_types(array $types): array
     {
         $keywords = HusmusenKeyword::get_all();
 

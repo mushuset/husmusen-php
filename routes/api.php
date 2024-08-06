@@ -122,7 +122,7 @@ Route::get('/1.0.0/keyword', function (Request $request) {
 Route::get('/1.0.0/keyword/{types}', function (Request $request, string $types) {
     $types_array = explode(',', $types);
 
-    return response_handler(HusmusenKeyword::get_all_of_types($types_array), $request);
+    return response_handler(HusmusenKeyword::get_all_by_types($types_array), $request);
 });
 
 /*
