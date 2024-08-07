@@ -78,7 +78,10 @@ class HusmusenItem extends Model
         'customData' => 'array',
     ];
 
-    // TODO: Document this
+    /**
+     * This is a relation implemented with Laravel's Eloquent ORM.
+     * https://laravel.com/docs/11.x/eloquent-relationships.
+     */
     public function files(): HasMany
     {
         return $this->hasMany(HusmusenFile::class, 'relatedItem');
