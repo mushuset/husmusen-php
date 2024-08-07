@@ -5,6 +5,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
+const DOTENV_LOCATION = '../.env';
+const DOTENV_READ_ERROR = 'Problem under inläsning av `.env`! (Dubbelkolla att `.env.example` är kopierad till `.env`.)';
+const DOTENV_WRITE_ERROR = 'Problem under skrivning av `.env` file! (Dubbelkolla att filrättigheter (file permissions) är korrekt inställda på din server.)';
+const ALL_GOOD_MESSAGE = 'Allt ska ha gått bra!';
+
 if (env('APP_DEBUG', false)) {
     Route::get('/setup', function () { return view('setup'); });
 
@@ -12,30 +17,24 @@ if (env('APP_DEBUG', false)) {
         $app_name = $request->get('APP_NAME', 'Husmusen');
         $app_url = $request->get('APP_URL', 'http://localhost');
 
-        if (!$dot_env_file_content = file_get_contents('../.env')) {
-            return Response::make(
-                'Problem under inläsning av `.env`! (Dubbelkolla att `.env.example` är kopierad till `.env`.)',
-                500
-            );
+        if (!$dot_env_file_content = file_get_contents(DOTENV_LOCATION)) {
+            return Response::make(DOTENV_READ_ERROR, 500);
         }
 
         $dot_env_file_content = preg_replace('/^APP_NAME=.*$/m', 'APP_NAME='.$app_name, $dot_env_file_content);
         $dot_env_file_content = preg_replace('/^APP_URL=.*$/m', 'APP_URL='.$app_url, $dot_env_file_content);
 
-        if (!$dot_env_file_content = file_put_contents('../.env', $dot_env_file_content)) {
-            return Response::make(
-                'Problem under skrivning av `.env` file! (Dubbelkolla att filrättigheter (file permissions) är korrekt inställda på din server.)',
-                500
-            );
+        if (!$dot_env_file_content = file_put_contents(DOTENV_LOCATION, $dot_env_file_content)) {
+            return Response::make(DOTENV_WRITE_ERROR, 500);
         }
 
-        return 'Allt ska ha gått bra!';
+        return ALL_GOOD_MESSAGE;
     });
 
     Route::post('/setup/museum-info', function (Request $request) {
         HusmusenDBInfo::update_from_array_data($request->all());
 
-        return 'Allt ska ha gått bra!';
+        return ALL_GOOD_MESSAGE;
     })->middleware('yaml_parser');
 
     Route::post('/setup/db-info', function (Request $request) {
@@ -45,11 +44,8 @@ if (env('APP_DEBUG', false)) {
         $db_username = $request->get('DB_USERNAME');
         $db_password = $request->get('DB_PASSWORD');
 
-        if (!$dot_env_file_content = file_get_contents('../.env')) {
-            return Response::make(
-                'Problem under inläsning av `.env`! (Dubbelkolla att `.env.example` är kopierad till `.env`.)',
-                500
-            );
+        if (!$dot_env_file_content = file_get_contents(DOTENV_LOCATION)) {
+            return Response::make(DOTENV_READ_ERROR, 500);
         }
 
         $dot_env_file_content = preg_replace('/^DB_HOST=.*$/m', 'DB_HOST='.$db_host, $dot_env_file_content);
@@ -58,14 +54,11 @@ if (env('APP_DEBUG', false)) {
         $dot_env_file_content = preg_replace('/^DB_USERNAME=.*$/m', 'DB_USERNAME='.$db_username, $dot_env_file_content);
         $dot_env_file_content = preg_replace('/^DB_PASSWORD=.*$/m', 'DB_PASSWORD='.$db_password, $dot_env_file_content);
 
-        if (!$dot_env_file_content = file_put_contents('../.env', $dot_env_file_content)) {
-            return Response::make(
-                'Problem under skrivning av `.env` file! (Dubbelkolla att filrättigheter (file permissions) är korrekt inställda på din server.)',
-                500
-            );
+        if (!$dot_env_file_content = file_put_contents(DOTENV_LOCATION, $dot_env_file_content)) {
+            return Response::make(DOTENV_WRITE_ERROR, 500);
         }
 
-        return 'Allt ska ha gått bra!';
+        return ALL_GOOD_MESSAGE;
     });
 
     Route::post('/setup/create-tables', function () {
@@ -165,27 +158,21 @@ if (env('APP_DEBUG', false)) {
             return 'Problem vid skapande av index `idx_customData`.';
         }
 
-        return 'Allt ska ha gått bra!';
+        return ALL_GOOD_MESSAGE;
     });
 
-    Route::post('/setup/done', function (Request $request) {
-        if (!$dot_env_file_content = file_get_contents('../.env')) {
-            return Response::make(
-                'Problem under inläsning av `.env`! (Dubbelkolla att `.env.example` är kopierad till `.env`.)',
-                500
-            );
+    Route::post('/setup/done', function () {
+        if (!$dot_env_file_content = file_get_contents(DOTENV_LOCATION)) {
+            return Response::make(DOTENV_READ_ERROR, 500);
         }
 
         $dot_env_file_content = preg_replace('/^APP_ENV=.*$/m', 'APP_ENV=production', $dot_env_file_content);
         $dot_env_file_content = preg_replace('/^APP_DEBUG=.*$/m', 'APP_DEBUG=false', $dot_env_file_content);
 
-        if (!$dot_env_file_content = file_put_contents('../.env', $dot_env_file_content)) {
-            return Response::make(
-                'Problem under skrivning av `.env` file! (Dubbelkolla att filrättigheter (file permissions) är korrekt inställda på din server.)',
-                500
-            );
+        if (!$dot_env_file_content = file_put_contents(DOTENV_LOCATION, $dot_env_file_content)) {
+            return Response::make(DOTENV_WRITE_ERROR, 500);
         }
 
-        return 'Allt ska ha gått bra!';
+        return ALL_GOOD_MESSAGE;
     });
 }
