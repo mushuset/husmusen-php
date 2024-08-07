@@ -40,6 +40,13 @@ Route::get('/app/search', function (Request $request) {
     return view('search', ['queries' => $queries]);
 });
 
+Route::get('/app/items', function () {
+    // Get all items.
+    $items = HusmusenItem::all();
+
+    return view('all_items', ['items' => $items]);
+});
+
 // TODO: Also search for files related to the item.
 Route::get('/app/item/{id}', function (string $id) {
     // Make sure the ID is valid; only consisting of numbers.

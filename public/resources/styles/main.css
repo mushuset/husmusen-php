@@ -108,7 +108,8 @@ hr {
     color: var(--muted-color);
 }
 
-form {
+form,
+.center-on-page-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -305,9 +306,10 @@ section > form {
 }
 
 .log,
-.keywords {
+.keywords,
+.all-items {
     display: grid;
-    grid-template-columns: auto auto 1fr;
+    grid-template-columns: auto auto auto;
     place-items: center start;
     border: .1rem solid var(--standout-color);
     width: 90%;
@@ -316,8 +318,13 @@ section > form {
     overflow-x: auto;
 }
 
+.all-items {
+    grid-template-columns: auto auto auto auto;
+}
+
 .log > *,
-.keywords > * {
+.keywords > *,
+.all-items > * {
     margin: auto 0;
     padding: .5rem;
     width: 100%;
@@ -326,7 +333,8 @@ section > form {
 }
 
 .log > .timestamp,
-.keywords > .type {
+.keywords > .type,
+.all-items > .id {
     grid-column: 1;
     color: var(--muted-color);
 }
@@ -346,4 +354,14 @@ section > form {
 .log .info {
     grid-column: 1 / 4;
     border-bottom: 0 none transparent;
+}
+
+.all-items > .type {
+    grid-column: 2;
+    color: var(--muted-color);
+}
+
+.all-items > .name {
+    grid-column: 3;
+    color: var(--accent-color)
 }
