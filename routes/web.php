@@ -84,7 +84,9 @@ Route::get('/app/keywords', function () {
 });
 
 Route::get('/app/db_info', function () {
-    $db_info = HusmusenDBInfo::get_db_info();
+    // FIXME: There must be a way where you don't need to JSON encode and decode this...
+    // (Functionality breaks if this is removed.)
+    $db_info = json_decode(json_encode(HusmusenDBInfo::get_db_info()));
 
     return view('db_info', ['db_info' => $db_info]);
 });

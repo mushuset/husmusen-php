@@ -8,16 +8,19 @@
 @if(isset($err))
 <p>{{ $err }}</p>
 @else
-<h1>Om museet:</h1>
-<table>
-    @foreach($db_info->museumDetails as $field => $value)
-    <tr>
-        <td>{{ $field }}</td>
-        <td>{{ $value }}</td>
-    </tr>
-    @endforeach
-</table>
-<h1>Om databasen:</h1>
+
+<h1>Om {{ $db_info->museumDetails->name }}</h1>
+<p>{{ $db_info->museumDetails->description }}</p>
+<p>Mer information om museet finner du på <a href="{{ $db_info->museumDetails->website }}">Vår hemsida</a></p>
+
+<h2>Du finner oss här:</h2>
+<p>
+    Adress: {{ $db_info->museumDetails->address }} <br>
+    Plats: {{ $db_info->museumDetails->location }} <br>
+    Koordinater: {{ $db_info->museumDetails->coordinates }} <br>
+</p>
+
+<h2>Adcancerad infromation om databasen:</h2>
 <table>
     @foreach($db_info as $field => $value)
     @unless($field == 'museumDetails')
