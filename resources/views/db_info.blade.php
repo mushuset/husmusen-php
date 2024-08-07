@@ -11,13 +11,13 @@
 
 <h1>Om {{ $db_info->museumDetails->name }}</h1>
 <p>{{ $db_info->museumDetails->description }}</p>
-<p>Mer information om museet finner du på <a href="{{ $db_info->museumDetails->website }}">Vår hemsida</a></p>
+<p>Mer information om museet finner du på <a href="{{ $db_info->museumDetails->website }}">vår hemsida</a>.</p>
 
 <h2>Du finner oss här:</h2>
 <p>
-    Adress: {{ $db_info->museumDetails->address }} <br>
-    Plats: {{ $db_info->museumDetails->location }} <br>
-    Koordinater: {{ $db_info->museumDetails->coordinates }} <br>
+    <b>Adress:</b> {{ $db_info->museumDetails->address }} <br>
+    <b>Plats:</b> {{ $db_info->museumDetails->location }} <br>
+    <b>Koordinater:</b> {{ $db_info->museumDetails->coordinates }} <br>
 </p>
 
 <h2>Adcancerad infromation om databasen:</h2>

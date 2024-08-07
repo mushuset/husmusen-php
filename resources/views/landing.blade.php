@@ -19,12 +19,10 @@
     <input type="submit" value="Hämta föremål!">
 </form>
 
-<div class="center-on-page-container">
-    <h2>Se en lista över alla föremål</h2>
-    <p>
-        Det finns en lista på alla föremål som finns i den här databasen. Den är mest tänkt för att sökmotorer ska
-        kunna läsa igenom alla föremål och göra dem sökbara på nätet, men om du också vill se den, så finns den <a
-            href="/app/items">här</a>.
-    </p>
-</div>
+<h2>Se en lista över alla föremål</h2>
+<p>
+    Det finns en lista på alla föremål som finns i den här databasen. Den är mest tänkt för att sökmotorer ska
+    kunna läsa igenom alla föremål och göra dem sökbara på nätet, men om du också vill se den, så finns den <a
+        href="/app/items">här</a>.
+</p>
 @endsection

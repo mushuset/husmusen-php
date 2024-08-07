@@ -1,19 +1,19 @@
 @font-face {
-    font-family: 'Open Sans';
+    font-family: 'Inter';
     font-style: normal;
     font-stretch: normal;
     font-display: swap;
-    src: url(/resources/fonts/OpenSans.woff2) format('woff2'),
-        url(/resources/fonts/OpenSans.woff) format('woff'),
-        url(/resources/fonts/OpenSans.ttf) format('truetype');
+    src:
+        url(/resources/fonts/InterVariable.woff2) format('woff2'),
+        url(/resources/fonts/InterVariable.ttf) format('truetype');
 }
 
 @font-face {
-    font-family: 'Open Sans';
+    font-family: 'Inter';
     font-style: italic;
     font-stretch: normal;
     font-display: swap;
-    src: url(/resources/fonts/OpenSans-Italic.woff2) format('woff2'),
-        url(/resources/fonts/OpenSans-Italic.woff) format('woff'),
-        url(/resources/fonts/OpenSans-Italic.ttf) format('truetype');
+    src:
+        url(/resources/fonts/InterVariable-Italic.woff2) format('woff2'),
+        url(/resources/fonts/InterVariable-Italic.ttf) format('truetype');
 }

@@ -7,7 +7,7 @@
 @section('body')
 <form action="/api/1.0.0/item/new" method="post" class="YAML">
     <h1>Skapa nytt objekt:</h1>
-    <textarea name="YAML" cols="120" rows="20" style="font-family: monospace">
+    <textarea name="YAML" rows="20" class="full-width monospace">
 @include('components.parts.Item-yaml')
 
 itemData:
@@ -25,7 +25,8 @@ customData:
     <p style="grid-column: span 3">Nedan ser du alla giltiga nyckelord för dina valda objektstyp. Ogilitiga nyckelord
         kommer filtreras bort automatiskt av systemet.</p>
     <p style="grid-column: span 3">Tips! Du kan söka bland nyckelorden i de flesta webbläsare genom att klicka CTRL + F.
-        <br></p>
+        <br>
+    </p>
     <p><b>Typ:</b></p>
     <p><b>Ord:</b></p>
     <p><b>Beskrivning:</b></p>

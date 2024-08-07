@@ -7,7 +7,7 @@
 @section('body')
 <form action="/api/1.0.0/keyword" method="post" id="edit-keywords-form">
     <h1>Redigera nyckelord:</h1>
-    <textarea name="newKeywordData" cols="120" rows="40" style="font-family: monospace">{{ $keywordsAsText }}</textarea>
+    <textarea name="newKeywordData" rows="20" class="full-width monospace">{{ $keywordsAsText }}</textarea>
     <input type="submit" value="Spara!">
 </form>
 @endsection
