@@ -11,7 +11,7 @@
 @include('components.search_box')
 
 <form action="#" id="get-item-by-id">
-    <h2>Hitta föremål efter inventarie nummer</h2>
+    <h2>Hitta föremål efter inventarienummer</h2>
     <div class="text-inputs">
         <label for="item-id">Vilket inventarienummer har föremålet?</label>
         <input type="text" name="itemID" id="item-id">
