@@ -39,32 +39,28 @@ class HusmusenUser extends Model
      */
     public static function get_token(HusmusenUser $user, int $valid_until): string
     {
-        // FIXME: Reflect iss and aud to website.
         $payload = [
-            'iss' => 'https://example.com',
-            'aud' => 'https://example.com',
+            'iss' => env('APP_URL'),
+            'aud' => env('APP_URL'),
             'iat' => time(),
             'nbf' => time(),
             'exp' => $valid_until,
             'sub' => $user->username,
             'admin' => $user->isAdmin,
         ];
-        $token = JWT::encode($payload, JWT_KEY, 'HS256');
 
-        return $token;
+        return JWT::encode($payload, JWT_KEY, 'HS256');
     }
 
     public static function decode_token(string $token): \stdClass
     {
-        /**
+        /*
          * This class represents a user stored in the database.
          *
          * @property string $sub   Username
          * @property bool   $admin
          */
-        $decoded = JWT::decode($token, new Key(JWT_KEY, 'HS256'));
-
-        return $decoded;
+        return JWT::decode($token, new Key(JWT_KEY, 'HS256'));
     }
 
     /**
