@@ -86,7 +86,7 @@ Route::get('/1.0.0/item/search', function (Request $request) {
 Route::get('/1.0.0/item/info/{id}', function (string $id) {
     $item = HusmusenItem::find($id);
     if (!$item) {
-        return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
+        return HusmusenError::create(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
     }
 
     return response_handler($item, request());
@@ -97,7 +97,7 @@ Route::get('/1.0.0/file/get/{id}', function (string $id) {
     $file_path = join_paths(base_path('data/files'), $id);
 
     if (!$file) {
-        return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
+        return HusmusenError::create(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
     }
 
     $response = FacadeResponse::make(File::get($file_path));
@@ -109,7 +109,7 @@ Route::get('/1.0.0/file/get/{id}', function (string $id) {
 Route::get('/1.0.0/file/info/{id}', function (string $id) {
     $file = HusmusenFile::find($id);
     if (!$file) {
-        return HusmusenError::SendError(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
+        return HusmusenError::create(404, 'ERR_FILE_NOT_FOUND', 'It appears this file does not exist.');
     }
 
     return response_handler($file, request());
@@ -133,23 +133,23 @@ Route::post('/auth/login', function (Request $request) {
     $password = $request->input('password');
 
     if (!$username) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
     }
 
     if (!$password) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
     }
 
     $user = HusmusenUser::find($username);
 
     if (!$user) {
-        return HusmusenError::SendError(500, 'ERR_USER_NOT_FOUND', 'There was an error looking up the user!');
+        return HusmusenError::create(500, 'ERR_USER_NOT_FOUND', 'There was an error looking up the user!');
     }
 
     $pass_is_valid = Hash::check($password, $user->password);
 
     if (!$pass_is_valid) {
-        return HusmusenError::SendError(400, 'ERR_INVALID_PASSWORD', 'Incorrect password.');
+        return HusmusenError::create(400, 'ERR_INVALID_PASSWORD', 'Incorrect password.');
     }
 
     // 4 hours in the future.
@@ -176,17 +176,17 @@ Route::post('/auth/new', function (Request $request) {
     $is_admin = $request->input('isAdmin');
 
     if (!$username) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
     }
 
     if (!$password) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
     }
 
     $user = HusmusenUser::find($username);
 
     if ($user) {
-        return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
+        return HusmusenError::create(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
     }
 
     $user = HusmusenUser::create([
@@ -212,21 +212,21 @@ Route::post('/auth/delete', function (Request $request) {
     $username = $request->input('username');
 
     if (!$username) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
     }
 
     if ($username == $request->get('auth_username')) {
-        return HusmusenError::SendError(402, 'ERR_FORBIDDEN_ACTION', 'You cannot delete yourself!');
+        return HusmusenError::create(402, 'ERR_FORBIDDEN_ACTION', 'You cannot delete yourself!');
     }
 
     $user = HusmusenUser::find($username);
 
     if (!$user) {
-        return HusmusenError::SendError(400, 'ERR_USER_NOT_FOUND', 'There is no user with that username!');
+        return HusmusenError::create(400, 'ERR_USER_NOT_FOUND', 'There is no user with that username!');
     }
 
     if (!$user->delete()) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'There was an error deleting that user!');
+        return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'There was an error deleting that user!');
     }
 
     HusmusenLog::write(
@@ -246,11 +246,11 @@ Route::post('/auth/change_password', function (Request $request) {
     $new_password = $request->input('newPassword');
 
     if (!$current_password) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'currentPassword'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'currentPassword'.");
     }
 
     if (!$new_password) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'newPassword'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'newPassword'.");
     }
 
     // This will be safe, it will always return a valid user.
@@ -262,7 +262,7 @@ Route::post('/auth/change_password', function (Request $request) {
 
     $password_matches = Hash::check($current_password, $who->password);
     if (!$password_matches) {
-        return HusmusenError::SendError(401, 'ERR_INVALID_PASSWORD', "Your provided 'currentPassword' is not correct!");
+        return HusmusenError::create(401, 'ERR_INVALID_PASSWORD', "Your provided 'currentPassword' is not correct!");
     }
 
     DB::table('husmusen_users')
@@ -278,17 +278,17 @@ if (env('APP_DEBUG', false)) {
         $password = $request->input('password');
 
         if (!$username) {
-            return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
+            return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'username'.");
         }
 
         if (!$password) {
-            return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
+            return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'password'.");
         }
 
         $user = HusmusenUser::find($username);
 
         if ($user) {
-            return HusmusenError::SendError(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
+            return HusmusenError::create(400, 'ERR_ALREADY_EXISTS', 'That user already exists!');
         }
 
         return response_handler(
@@ -310,7 +310,7 @@ Route::post('/1.0.0/item/new', function (Request $request) {
     $save_succeded = $item_to_create->save();
 
     if (!$save_succeded) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+        return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
     HusmusenLog::write(
@@ -331,14 +331,14 @@ Route::post('/1.0.0/item/edit', function (Request $request) {
     $item_to_update = HusmusenItem::find($item_id);
 
     if (!$item_to_update) {
-        return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
+        return HusmusenError::create(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
     }
 
     $new_item_data = $request->input('newItemData');
     $save_succeded = HusmusenItem::update_from_array_data($item_to_update, $new_item_data);
 
     if (!$save_succeded) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+        return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
     HusmusenLog::write(
@@ -361,16 +361,16 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
     $reason = $request->input('reason');
 
     if (!$item_id) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
     }
 
     if (!$reason) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'reason'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'reason'.");
     }
 
     $item = HusmusenItem::find($item_id);
     if (!$item) {
-        return HusmusenError::SendError(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
+        return HusmusenError::create(404, 'ERR_ITEM_NOT_FOUND', 'It appears this item does not exist.');
     }
 
     $item->isExpired = true;
@@ -378,7 +378,7 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
 
     $save_succeded = $item->save();
     if (!$save_succeded) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
+        return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
     HusmusenLog::write(
@@ -400,7 +400,7 @@ Route::post('/1.0.0/file/new', function (Request $request) {
     $save_succeded = $file_to_create->save();
 
     if (!$save_succeded) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file metadata!');
+        return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file metadata!');
     }
 
     $base64_image = $request->input('fileDataURL');
@@ -426,14 +426,14 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
     $file_to_update = HusmusenFile::find($fileID);
 
     if (!$file_to_update) {
-        return HusmusenError::SendError(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
+        return HusmusenError::create(404, 'ERR_OBJECT_NOT_FOUND', "The item you're trying to edit does not exist!");
     }
 
     $newFileData = $request->input('newFileData');
     $save_succeded = HusmusenFile::update_from_array_data($file_to_update, $newFileData);
 
     if (!$save_succeded) {
-        return HusmusenError::SendError(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
+        return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
     }
 
     HusmusenLog::write(
@@ -454,12 +454,12 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
 Route::post('/1.0.0/file/delete', function (Request $request) {
     $id = $request->input('fileID');
     if (!$id) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'fileID'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'fileID'.");
     }
 
     $file = HusmusenFile::find($id);
     if (!$file) {
-        return HusmusenError::SendError(400, 'ERR_FILE_NOT_FOUND', "That item doesn't exist!");
+        return HusmusenError::create(400, 'ERR_FILE_NOT_FOUND', "That item doesn't exist!");
     }
 
     $file_path = join_paths(base_path('data/files'), $id);
@@ -482,12 +482,12 @@ Route::post('/db_info', function (Request $request) {
 Route::post('/1.0.0/item/delete', function (Request $request) {
     $id = $request->input('itemID');
     if (!$id) {
-        return HusmusenError::SendError(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
+        return HusmusenError::create(400, 'ERR_MISSING_PARAMETER', "You must specify 'itemID'.");
     }
 
     $item = HusmusenItem::find($id);
     if (!$item) {
-        return HusmusenError::SendError(400, 'ERR_OBJECT_NOT_FOUND', "That item doesn't exist!");
+        return HusmusenError::create(400, 'ERR_OBJECT_NOT_FOUND', "That item doesn't exist!");
     }
 
     $files = HusmusenFile::all()->where('relatedItem', '==', $id);
@@ -512,7 +512,7 @@ Route::post('/1.0.0/keyword', function (Request $request) {
         );
         HusmusenKeyword::update_keywords($keywords);
     } catch (Throwable $th) {
-        return HusmusenError::SendError(400, 'ERR_UNKNOWN_ERROR', 'There was an error saving the keywords...');
+        return HusmusenError::create(400, 'ERR_UNKNOWN_ERROR', 'There was an error saving the keywords...');
     }
 
     return response_handler(HusmusenKeyword::get_all(), request());

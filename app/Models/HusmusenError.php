@@ -13,7 +13,7 @@ class HusmusenError
         $this->errorDescription = $errorDescription;
     }
 
-    public static function SendError(int $httpStatusCode, string $errorCode, string $errorDescription)
+    public static function create(int $httpStatusCode, string $errorCode, string $errorDescription)
     {
         $error = new HusmusenError($errorCode, $errorDescription);
 
