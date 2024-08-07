@@ -7,8 +7,7 @@ use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-// FIXME: Read this from a .env file or something...
-const JWT_KEY = 'CHANGE ME!';
+const JWT_KEY = env('APP_KEY');
 
 const FOUR_HOURS_AS_SECONDS = 4 * 60 * 60;
 
