@@ -41,32 +41,24 @@ class HusmusenFile extends Model
     public static function from_array_data(array $fromData): HusmusenFile
     {
         $file = new HusmusenFile();
-        try {
-            $file->name = $fromData['name'];
-            $file->type = $fromData['type'];
-            $file->description = $fromData['description'];
-            $file->license = $fromData['license'];
-            $file->fileID = (string) Str::orderedUuid();
-            $file->relatedItem = $fromData['relatedItem'] ?? null;
+        $file->name = $fromData['name'];
+        $file->type = $fromData['type'];
+        $file->description = $fromData['description'];
+        $file->license = $fromData['license'];
+        $file->fileID = (string) Str::orderedUuid();
+        $file->relatedItem = $fromData['relatedItem'] ?? null;
 
-            // Not setting files, since that's a relation.
-            return $file;
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // Not setting files, since that's a relation.
+        return $file;
     }
 
     public static function update_from_array_data(HusmusenFile $file, array $fromData): bool
     {
-        try {
-            $file->name = $fromData['name'];
-            $file->license = $fromData['license'];
-            $file->relatedItem = $fromData['relatedItem'];
+        $file->name = $fromData['name'];
+        $file->license = $fromData['license'];
+        $file->relatedItem = $fromData['relatedItem'];
 
-            // Not setting files, since that's a relation.
-            return $file->save();
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // Not setting files, since that's a relation.
+        return $file->save();
     }
 }

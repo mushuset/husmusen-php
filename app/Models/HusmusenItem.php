@@ -106,42 +106,34 @@ class HusmusenItem extends Model
     public static function from_array_data(array $fromData): HusmusenItem
     {
         $item = new HusmusenItem();
-        try {
-            $item->name = $fromData['name'];
-            $item->description = $fromData['description'];
-            $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
-            $item->type = $fromData['type'];
-            $item->itemID = $fromData['itemID'];
-            $item->addedAt = $fromData['addedAt'] ?? null;
-            $item->updatedAt = $fromData['updatedAt'] ?? null;
-            $item->customData = $fromData['customData'] ?? [];
-            $item->itemData = $fromData['itemData'];
-            $item->isExpired = $fromData['isExpired'] ?? false;
-            $item->expireReason = $fromData['expireReason'] ?? null;
+        $item->name = $fromData['name'];
+        $item->description = $fromData['description'];
+        $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
+        $item->type = $fromData['type'];
+        $item->itemID = $fromData['itemID'];
+        $item->addedAt = $fromData['addedAt'] ?? null;
+        $item->updatedAt = $fromData['updatedAt'] ?? null;
+        $item->customData = $fromData['customData'] ?? [];
+        $item->itemData = $fromData['itemData'];
+        $item->isExpired = $fromData['isExpired'] ?? false;
+        $item->expireReason = $fromData['expireReason'] ?? null;
 
-            // Not setting files, since that's a relation.
-            return $item;
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // Not setting files, since that's a relation.
+        return $item;
     }
 
     public static function update_from_array_data(HusmusenItem $item, array $fromData): bool
     {
-        try {
-            $item->name = $fromData['name'];
-            $item->description = $fromData['description'];
-            $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
-            $item->type = $fromData['type'];
-            $item->itemID = $fromData['itemID'];
-            $item->customData = $fromData['customData'] ?? [];
-            $item->itemData = $fromData['itemData'];
+        $item->name = $fromData['name'];
+        $item->description = $fromData['description'];
+        $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
+        $item->type = $fromData['type'];
+        $item->itemID = $fromData['itemID'];
+        $item->customData = $fromData['customData'] ?? [];
+        $item->itemData = $fromData['itemData'];
 
-            // Not setting files, since that's a relation.
-            return $item->save();
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // Not setting files, since that's a relation.
+        return $item->save();
     }
 
     public static function get_next_item_id(): int

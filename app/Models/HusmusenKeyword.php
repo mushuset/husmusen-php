@@ -18,16 +18,12 @@ class HusmusenKeyword
     public static function from_array_data(array $fromData): HusmusenKeyword
     {
         $keyword = new HusmusenKeyword();
-        try {
-            $keyword->type = $fromData['type'];
-            $keyword->word = $fromData['word'];
-            $keyword->description = $fromData['description'];
+        $keyword->type = $fromData['type'];
+        $keyword->word = $fromData['word'];
+        $keyword->description = $fromData['description'];
 
-            // Not setting files, since that's a relation.
-            return $keyword;
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        // Not setting files, since that's a relation.
+        return $keyword;
     }
 
     /**
