@@ -33,6 +33,16 @@ enum HusmusenItemType: string
     case PhysicalItem = 'PhysicalItem';
     case Sketch = 'Sketch';
     case Sound = 'Sound';
+
+    /**
+     * Gets all types as string representations in an array.
+     *
+     * @return string[]
+     */
+    public static function get_as_strings(): array
+    {
+        return array_map(fn (HusmusenItemType $type) => $type->name, HusmusenItemType::cases());
+    }
 }
 
 /**
@@ -86,31 +96,6 @@ class HusmusenItem extends Model
     {
         return $this->hasMany(HusmusenFile::class, 'relatedItem');
     }
-
-    // FIXME: Maybe this can be replaced with `HusmusenItemType`...
-    public static $valid_types = [
-        'ArtPiece',
-        'Blueprint',
-        'Book',
-        'Building',
-        'Collection',
-        'Concept',
-        'CulturalEnvironment',
-        'CulturalHeritage',
-        'Document',
-        'Exhibition',
-        'Film',
-        'Group',
-        'HistoricalEvent',
-        'InteractiveResource',
-        'PhysicalItem',
-        'Map',
-        'Organisation',
-        'Person',
-        'Photo',
-        'Sketch',
-        'Sound',
-    ];
 
     public static function from_array_data(array $fromData): HusmusenItem
     {
@@ -168,9 +153,9 @@ class HusmusenItem extends Model
         // Filter for only valid types.
         $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);  // Make sure `types` isn't an array already, before splitting it into one.
         $valid_types = array_filter($types_as_array, function ($type) {
-            return in_array($type, HusmusenItem::$valid_types);
+            return in_array($type, HusmusenItemType::get_as_strings());
         });
-        $types_sql = "('".join("','", 0 != sizeof($valid_types) ? $valid_types : HusmusenItem::$valid_types)."')";
+        $types_sql = "('".join("','", 0 != sizeof($valid_types) ? $valid_types : HusmusenItemType::get_as_strings())."')";
 
         // Make sure `keyword_mode` is not an array.
         $keyword_mode_as_string = is_array($keyword_mode) ? end($keyword_mode) : $keyword_mode;

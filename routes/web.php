@@ -105,7 +105,7 @@ Route::get('/app/control_panel', function () {
 
 Route::get('/app/control_panel/new_item', function (Request $request) {
     // type validation
-    if (!in_array($request->query('type'), HusmusenItem::$valid_types)) {
+    if (!in_array($request->query('type'), HusmusenItemType::get_as_strings())) {
         $request->instance()->query->set('type', 'Book');
     }
 
