@@ -50,7 +50,7 @@ enum HusmusenItemType: string
  *
  * @property string           $name         A human readable name for the item.
  * @property string           $description  A longer description of what the item is.
- * @property string           $keywords     A comma separeted list of search keywords for the item.
+ * @property string           $keywords     A comma separated list of search keywords for the item.
  * @property HusmusenItemType $type
  * @property int              $itemID       A unique ID for the item.
  * @property \DateTime        $addedAt
@@ -69,7 +69,7 @@ class HusmusenItem extends Model
     // Items are stored in the table `husmusen_items`
     protected $table = 'husmusen_items';
 
-    // Specifiy primary key!
+    // Specify primary key!
     // This is necessary only when the primary key is something other than 'id'.
     protected $primaryKey = 'itemID';
 
@@ -221,16 +221,16 @@ class HusmusenItem extends Model
         /**
          * This formula figures out if the results should be reversed or not.
          * The complexity is needed because the 'relevance' search option works
-         * the other way around compared to all other sorting otions.
+         * the other way around compared to all other sorting options.
          */
         $should_reverse_order = 'relevance' == $order_by
             ? ('1' == $reverse || 'on' == $reverse || 'true' == $reverse ? 'ASC' : 'DESC')
             : ('1' == $reverse || 'on' == $reverse || 'true' == $reverse ? 'DESC' : 'ASC');
 
-        // FIXME: Find a way to make sure this is safe and no SQL-incations...
+        // FIXME: Find a way to make sure this is safe and no SQL-injections...
         $sanitized_freetext = $freetext;
 
-        // This formula generates a relevance based on the freetext search.
+        // This formula generates a relevance based on the free text search.
         $magic_relevance_sql = "((MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) - 1) / 3";
         $magic_relevance_search_sql = null != $freetext ? "AND (MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) OR MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE))" : '';
 

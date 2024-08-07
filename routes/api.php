@@ -307,9 +307,9 @@ if (env('APP_DEBUG', false)) {
  */
 Route::post('/1.0.0/item/new', function (Request $request) {
     $item_to_create = HusmusenItem::from_array_data($request->all());
-    $save_succeded = $item_to_create->save();
+    $save_succeeded = $item_to_create->save();
 
-    if (!$save_succeded) {
+    if (!$save_succeeded) {
         return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
@@ -335,9 +335,9 @@ Route::post('/1.0.0/item/edit', function (Request $request) {
     }
 
     $new_item_data = $request->input('newItemData');
-    $save_succeded = HusmusenItem::update_from_array_data($item_to_update, $new_item_data);
+    $save_succeeded = HusmusenItem::update_from_array_data($item_to_update, $new_item_data);
 
-    if (!$save_succeded) {
+    if (!$save_succeeded) {
         return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
@@ -376,8 +376,8 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
     $item->isExpired = true;
     $item->expireReason = $request->input('reason');
 
-    $save_succeded = $item->save();
-    if (!$save_succeded) {
+    $save_succeeded = $item->save();
+    if (!$save_succeeded) {
         return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the item!');
     }
 
@@ -397,9 +397,9 @@ Route::post('/1.0.0/item/mark', function (Request $request) {
 
 Route::post('/1.0.0/file/new', function (Request $request) {
     $file_to_create = HusmusenFile::from_array_data($request->all());
-    $save_succeded = $file_to_create->save();
+    $save_succeeded = $file_to_create->save();
 
-    if (!$save_succeded) {
+    if (!$save_succeeded) {
         return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file metadata!');
     }
 
@@ -430,9 +430,9 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
     }
 
     $newFileData = $request->input('newFileData');
-    $save_succeded = HusmusenFile::update_from_array_data($file_to_update, $newFileData);
+    $save_succeeded = HusmusenFile::update_from_array_data($file_to_update, $newFileData);
 
-    if (!$save_succeded) {
+    if (!$save_succeeded) {
         return HusmusenError::create(500, 'ERR_DATABASE_ERROR', 'Something went wrong while saving the file!');
     }
 

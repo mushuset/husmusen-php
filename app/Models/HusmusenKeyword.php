@@ -80,7 +80,7 @@ class HusmusenKeyword
     /**
      * Updates the keywords list.
      *
-     * Do note that this **OVERWERITES** the previous keywords list.
+     * Do note that this **OVERWRITES** the previous keywords list.
      *
      * @param HusmusenKeyword[] $keywords the new keywords
      *
@@ -89,7 +89,7 @@ class HusmusenKeyword
     public static function update_keywords(array $keywords): array
     {
         // Sort the keywords in alphabetical order.
-        // Makes them easier to edit in conjuction with the UI and HusmusenKeyword::get_all_as_edit_friendly_format()
+        // Makes them easier to edit in conjunction with the UI and HusmusenKeyword::get_all_as_edit_friendly_format()
         sort($keywords, SORT_STRING);
         File::put(base_path('data/keywords.yaml'), Yaml::dump($keywords, 2, 4));
 

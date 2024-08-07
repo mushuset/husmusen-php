@@ -31,7 +31,7 @@ class HusmusenUser extends Model
     // Items are stored in the table `husmusen_items`
     protected $table = 'husmusen_users';
 
-    // Specifiy primary key!
+    // Specify primary key!
     // This is necessary only when the primary key is something other than 'id'.
     protected $primaryKey = 'username';
     protected $keyType = 'string';
