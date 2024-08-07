@@ -15,6 +15,9 @@ use Symfony\Component\Yaml\Yaml;
  * @property string $description A description of when to use the keyword. */
 class HusmusenKeyword
 {
+    /**
+     * Creates a `HusmusenKeyword` object from an array with the same properties as the class.
+     */
     public static function from_array_data(array $fromData): HusmusenKeyword
     {
         $keyword = new HusmusenKeyword();
@@ -34,7 +37,7 @@ class HusmusenKeyword
      */
     public static function make_proper_keywords_string(string $keywords, HusmusenItemType $type): string
     {
-        $keywords_array = explode(',', $keywords);
+        $keywords_array = explode(',', $keywords); // explode = split string into array
         $keywords_for_type = HusmusenKeyword::get_all_by_types([$type]);
         $keywords_for_type_as_strings = array_map(fn ($keyword) => $keyword->word, $keywords_for_type);
 
@@ -45,7 +48,7 @@ class HusmusenKeyword
         // This is required for the keyword item search to function properly.
         sort($valid_keywords, SORT_STRING);
 
-        return implode(',', $valid_keywords);
+        return implode(',', $valid_keywords); // implode = join array into string
     }
 
     /**
@@ -70,6 +73,7 @@ class HusmusenKeyword
         $keywords = HusmusenKeyword::get_all();
         $types_as_strings = array_map(fn ($type) => $type instanceof HusmusenItemType ? $type->value : $type, $types);
 
+        // Filter for keywords that are for the specified types and return them.
         return array_filter($keywords, fn ($keyword) => in_array($keyword->type, $types_as_strings));
     }
 
@@ -102,6 +106,7 @@ class HusmusenKeyword
         $keywords = HusmusenKeyword::get_all();
         $keyword_string_array = array_map(fn ($keyword): string => $keyword->type.': '.$keyword->word.': '.$keyword->description, $keywords);
 
+        // Sort the keywords alphabetically for easier navigation when editing.
         natcasesort($keyword_string_array);
 
         return implode("\n", $keyword_string_array);

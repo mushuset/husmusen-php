@@ -23,6 +23,13 @@ class HusmusenLog extends Model
 
     protected $keyType = 'string';
 
+    /**
+     * Write something to the log.
+     *
+     * @param string $prefix The "channel" the log message should be written in, e.g. "debug", "auth", "database", etc.
+     *
+     * @return void
+     */
     public static function write(string $prefix, string $message)
     {
         DB::table('husmusen_logs')->insert(['prefix' => $prefix, 'message' => $message]);

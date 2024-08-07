@@ -103,6 +103,9 @@ class HusmusenItem extends Model
      */
     public static const VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
 
+        /**
+     * Creates a `HusmusenItem` object from an array with the same properties as the class.
+     */
     public static function from_array_data(array $fromData): HusmusenItem
     {
         $item = new HusmusenItem();
@@ -122,6 +125,22 @@ class HusmusenItem extends Model
         return $item;
     }
 
+    /**
+     * Updates a `HusmusenItem` in the database from the given array data.
+     *
+     * The array needs to provide the following properties:
+     * - `name` (`string`)
+     * - `description` (`string`)
+     * - `keywords` (`string`)
+     * - `type` (`HusmusenItemType`)
+     * - `itemID` (`int`)
+     * - `itemData` (`HusmusenItemData`)
+     * - `customData` (`array` - with named properties)
+     *
+     * See the documentation for `HusmusenItem` for more information on what the properties should be.
+     *
+     * See external documentation for what `HusmusenItemData` should be. (https://github.com/mushuset/docs)
+     */
     public static function update_from_array_data(HusmusenItem $item, array $fromData): bool
     {
         $item->name = $fromData['name'];
@@ -136,6 +155,10 @@ class HusmusenItem extends Model
         return $item->save();
     }
 
+    /**
+     * Gets what the next ItemID will be. This can be known since the ItemID is an auto-incremented integer.
+     * @return int
+     */
     public static function get_next_item_id(): int
     {
         $id = DB::selectOne('SELECT itemID FROM husmusen_items ORDER BY itemID DESC LIMIT 1');
@@ -146,13 +169,26 @@ class HusmusenItem extends Model
         return $id->itemID + 1;
     }
 
+    /**
+     * Searches the database for `HusmusenItem`s.
+     * @param string|array $types If not empty, only search for items of specified types, else search for all `HusmusenItemType`s.
+     * @param string|array $freetext Free text search. Searches on name, description, itemData, customData.
+     * @param string|array $keywords Specify keywords to match against.
+     * @param string|array $keyword_mode Can be 'AND' or 'OR'. In 'AND' mode all keywords must be present to match, in 'OR' mode at least one keyword must be present.
+     * @param string|array $order_by What field to order by. Possible values are: 'name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'
+     * @param string|array $reverse If the results should be in reverse order.
+     * @return \Illuminate\Http\Response
+     */
     public static function search_v1_0_0(string|array $types, string|array $freetext, string|array $keywords, string|array $keyword_mode, string|array $order_by, string|array $reverse)
     {
+        // Make sure `types` isn't an array already, before splitting it into one.
+        $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);
         // Filter for only valid types.
-        $types_as_array = is_array($types) ? $types : preg_split('/,/', $types);  // Make sure `types` isn't an array already, before splitting it into one.
         $valid_types = array_filter($types_as_array, function ($type) {
             return in_array($type, HusmusenItemType::get_as_strings());
         });
+        // Create the types array to match against as (Type1,Type2,...).
+        // If no valid types are provided, match against all types.
         $types_sql = "('".join("','", 0 != sizeof($valid_types) ? $valid_types : HusmusenItemType::get_as_strings())."')";
 
         // Make sure `keyword_mode` is not an array.
@@ -160,23 +196,26 @@ class HusmusenItem extends Model
         // Make sure it is 'AND' or 'OR'.
         $keyword_mode_sane = 'AND' == $keyword_mode_as_string ? 'AND' : 'OR';
 
-        $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);  // Make sure `keyword` isn't an array already, before splitting it into one.
+        // Make sure `keyword` isn't an array already, before splitting it into one.
+        $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);
         // TODO: Validate the keywords.
         $valid_keywords = array_filter($keywords_as_array, function ($keyword) {
             return strlen($keyword) > 0;
         });
 
         // Create keyword SQL; slightly magical. :|
+        // /!\ This requires the keywords to be sorted alphabetically!
         $keyword_search_sql = 'AND' === $keyword_mode_sane
             // If in "AND-mode", use this magic RegEx created here:
-            // This also requires the keywords to be sorted alphabetically.
             ? (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(".join('(.*,|)', $valid_keywords).')(?=,|$)\'' : '')
+            //                                                    ^- This regex checks if all keywords are provided.
             // Otherwise, use "OR-mode" with this magic RegEx:
-            : (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(".join('|', $valid_keywords).')(?=,|$)\'' : '');
+            : (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(".join('|', $valid_keywords).')(?=,|$)\'' : ''); //
+            //                                                    ^- This regex checks if at least one keyword is provided.
 
         // Make sure `order_by` is not an array.
         $order_by_as_string = is_array($order_by) ? end($order_by) : $order_by;
-        // Make sure it is 'AND' or 'OR'.
+        // Make sure it is a valid sorting field.
         $order_by_sane = in_array($order_by_as_string, HusmusenItem::VALID_SORT_FIELDS) ? $order_by_as_string : 'name';
 
         /**
@@ -191,9 +230,11 @@ class HusmusenItem extends Model
         // FIXME: Find a way to make sure this is safe and no SQL-incations...
         $sanitized_freetext = $freetext;
 
+        // This formula generates a relevance based on the freetext search.
         $magic_relevance_sql = "((MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) + 1) - 1) / 3";
         $magic_relevance_search_sql = null != $freetext ? "AND (MATCH(name) AGAINST('$sanitized_freetext' IN BOOLEAN MODE) OR MATCH(description) AGAINST('$sanitized_freetext' IN BOOLEAN MODE))" : '';
 
+        // Finally, build the SQL statement, run it, and return the results.
         return response_handler(DB::select("
         SELECT *, ($magic_relevance_sql) AS relevance
             FROM husmusen_items

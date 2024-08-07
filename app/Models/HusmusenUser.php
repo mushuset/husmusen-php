@@ -7,8 +7,14 @@ use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * The JWT key is used to sign the JWTs so they can't be meddled with by the clients.
+ */
 const JWT_KEY = env('APP_KEY');
 
+/**
+ * Four hours worth of seconds; used to set expiration times for tokens.
+ */
 const FOUR_HOURS_AS_SECONDS = 4 * 60 * 60;
 
 /**
