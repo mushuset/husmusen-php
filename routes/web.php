@@ -47,7 +47,6 @@ Route::get('/app/items', function () {
     return view('all_items', ['items' => $items]);
 });
 
-// TODO: Also search for files related to the item.
 Route::get('/app/item/{id}', function (string $id) {
     // Make sure the ID is valid; only consisting of numbers.
     if (!preg_match('/^\d+$/', $id)) {
