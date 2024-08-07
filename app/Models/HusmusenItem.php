@@ -97,6 +97,12 @@ class HusmusenItem extends Model
         return $this->hasMany(HusmusenFile::class, 'relatedItem');
     }
 
+    /**
+     * Valid fields for which a user can sort search results.
+     * @var string[]
+     */
+    public static const VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
+
     public static function from_array_data(array $fromData): HusmusenItem
     {
         $item = new HusmusenItem();
@@ -176,11 +182,10 @@ class HusmusenItem extends Model
             // Otherwise, use "OR-mode" with this magic RegEx:
             : (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(".join('|', $valid_keywords).')(?=,|$)\'' : '');
 
-        $VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
         // Make sure `order_by` is not an array.
         $order_by_as_string = is_array($order_by) ? end($order_by) : $order_by;
         // Make sure it is 'AND' or 'OR'.
-        $order_by_sane = in_array($order_by_as_string, $VALID_SORT_FIELDS) ? $order_by_as_string : 'name';
+        $order_by_sane = in_array($order_by_as_string, HusmusenItem::VALID_SORT_FIELDS) ? $order_by_as_string : 'name';
 
         /**
          * This formula figures out if the results should be reversed or not.
