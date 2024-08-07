@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Yaml\Yaml;
 
-require __DIR__.'/setup.php';
+require_once __DIR__.'/setup.php';
 
 /*
  * |--------------------------------------------------------------------------
