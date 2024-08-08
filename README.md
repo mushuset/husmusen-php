@@ -6,7 +6,7 @@ This is an implementation of [Husmusen](https://github.com/mushuset/docs) in PHP
 
 ## Requirements
 
-Husmusen-PHP requries:
+Husmusen-PHP requires:
 
 * `PHP` version 8 ([Installation guide](https://www.php.net/manual/en/install.php))
 * `composer` ([a dependency/package manager for PHP](https://getcomposer.org/))
@@ -50,7 +50,15 @@ composer install
 
 For the server to work properly, a `.env` file is needed. To create one, simply copy the contents of `.env.example` into `.env`.
 
-### Step 4: Running a server
+### Step 4: Generating the APP_KEY and running the server
+
+Generate an app key with the following command:
+
+```bash
+php artisan key:generate
+```
+
+The app key will be used to sign JWTs (JSON Web Tokens).
 
 The easiest way to run a server for development purposes is to use the included `artisan` script/command. Simply run:
 
@@ -60,7 +68,7 @@ php artisan serve
 
 > [!TIP]
 > If you want, you can specify port and host for the server with `--port=12345` (change `12345` to whatever port you want) and `--host=0.0.0.0`.
-> Setting the `--host` to `0.0.0.0` is useful if you want to reach your development server from more than just `loclhost` (`127.0.0.1`).
+> Setting the `--host` to `0.0.0.0` is useful if you want to reach your development server from more than just `localhost` (`127.0.0.1`).
 > You can also use `-vvv` to get more verbose output. (However, I believe that I've never seen this make a difference...)
 
 ### Step 5: First time setup
@@ -81,7 +89,22 @@ You are now done with the setup and you can start working on development.
 
 The first three steps are the same as for setting up a development environment, so follow steps 1–3 above.
 
+Also, generate an APP_KEY with command provided in step 4 of "Setting up a development environment".
+
 ### Step 4: Copying the project to your server
 
-> [!WARNING]
-> This part of the guide is not yet done. It will be added later.
+Now, copy all the files to your server to publish it.
+
+This will be different depending on what web hotel provider you use or if you host the server yourself.
+
+### Step 5: Point your domain to Husmusen
+
+This may also be different depending on web hotel provider or http server software.
+
+The basics of it, however, is to point your domain (or subdomain) to the `public`-folder.
+
+For Apache (a common http server) that should be all you have to do; the `.htaccess`-file in there should take care of the rest.
+
+### Step 6: First time setup
+
+Follow step 5 under "Setting up a development environment". This step is the same **except for the last part**! Now you **must** click the button confirming that your setup is completed. Else anyone else can visit the setup page and create their own admin user and subsequently delete your entire database!
