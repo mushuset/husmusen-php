@@ -12,7 +12,7 @@ for (const form of forms) {
     form.addEventListener(
         "submit",
         async (event) => {
-            // Make sure the default way of handling submition is ignored.
+            // Make sure the default way of handling submission is ignored.
             event.preventDefault()
 
             // Get all data.
@@ -126,7 +126,7 @@ for (const form of YAMLforms) {
     form.addEventListener(
         "submit",
         event => {
-            // Make sure the default way of handling submition is ignored.
+            // Make sure the default way of handling submission is ignored.
             event.preventDefault()
 
             // Get all data.
@@ -217,7 +217,7 @@ ${newItemData.replace(/^(?!$)/gm, "  ")}`
 )
 
 // FIXME: This looks very much like the above function.
-// It could probably be generalised to have one function for each.
+// It could probably be generalized to have one function for each.
 // ---
 // Handle the edit-file-form:
 const editFileForm = document.querySelector("#edit-file-form")
@@ -260,7 +260,7 @@ ${newFileData.replace(/^(?!$)/gm, "  ")}`
 )
 
 // FIXME: This looks very much like the above function.
-// It could probably be generalised to have one function for each.
+// It could probably be generalized to have one function for each.
 // ---
 // Handle the edit-file-form:
 const editKeywordsForm = document.querySelector("#edit-keywords-form")
