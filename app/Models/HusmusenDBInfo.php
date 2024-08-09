@@ -36,11 +36,11 @@ class HusmusenDBInfo
     /**
      * Gets the DBInfo. It is stored in `data/db_info.yaml`.
      *
-     * @return \stdClass the DBInfo
+     * @return array the DBInfo
      */
-    public static function get_db_info(): \stdClass
+    public static function get_db_info(): array
     {
-        return (object) Yaml::parseFile(base_path('data/db_info.yaml'));
+        return Yaml::parseFile(base_path('data/db_info.yaml'));
     }
 
     /**
@@ -50,7 +50,12 @@ class HusmusenDBInfo
      */
     public static function update_from_array_data(array $db_info)
     {
-        File::put(base_path('data/db_info.yaml'), Yaml::dump($db_info, 2, 4));
+        $current_db_info = HusmusenDBInfo::get_db_info();
+
+        $current_db_info['instanceName'] = $db_info['instanceName'];
+        $current_db_info['museumDetails'] = $db_info['museumDetails'];
+
+        File::put(base_path('data/db_info.yaml'), Yaml::dump($current_db_info, 2, 4));
 
         return HusmusenDBInfo::get_db_info();
     }
