@@ -1,5 +1,6 @@
 import checkIfLoggedIn from "./checkIfLoggedIn.js"
 import checkSuccess from "./checkSuccess.js"
+import expandKeysToObjects from "./expandKeysToObjects.js"
 
 // If the user isn't logged in, redirect them to the login page.
 // TODO: Maybe fix a pop-up instead?
@@ -19,8 +20,11 @@ for (const form of forms) {
             const formData = new FormData(form)
 
             // Read all keys and values into the `payload` variable.
-            let payload = {}
-            formData.forEach((value, key) => payload[key] = value)
+            let formDataAsObject = {}
+            formData.forEach((value, key) => formDataAsObject[key] = value)
+
+            // Expand keys into objects (if needed)
+            const payload = expandKeysToObjects(formDataAsObject)
 
             // Send a request using the action and method defined in the form-HTML element.
             // Also, send the payload as the body.
