@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * The JWT key is used to sign the JWTs so they can't be meddled with by the clients.
+ * Used to get the JWT key is used to sign the JWTs so they can't be meddled with by the clients.
  */
-const JWT_KEY = env('APP_KEY');
+function get_jwt_key()
+{
+    return env('APP_KEY');
+}
 
 /**
  * Four hours worth of seconds; used to set expiration times for tokens.
@@ -54,7 +57,7 @@ class HusmusenUser extends Model
             'admin' => $user->isAdmin,
         ];
 
-        return JWT::encode($payload, JWT_KEY, 'HS256');
+        return JWT::encode($payload, get_jwt_key(), 'HS256');
     }
 
     public static function decode_token(string $token): \stdClass
@@ -65,7 +68,7 @@ class HusmusenUser extends Model
          * @property string $sub   Username
          * @property bool   $admin
          */
-        return JWT::decode($token, new Key(JWT_KEY, 'HS256'));
+        return JWT::decode($token, new Key(get_jwt_key(), 'HS256'));
     }
 
     /**
