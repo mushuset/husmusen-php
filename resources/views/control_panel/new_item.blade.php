@@ -5,20 +5,41 @@
 @endsection
 
 @section('body')
-<form action="/api/1.0.0/item/new" method="post" class="YAML">
+<form action="/api/1.0.0/item/new" method="post" class="auto-rig">
     <h1>Skapa nytt objekt:</h1>
-    <textarea name="YAML" rows="20" class="full-width monospace">
-@include('components.parts.Item-yaml')
 
-itemData:
-{{ file_get_contents(resource_path('views/components/parts/ItemData_' . request()->query('type') . '.yml')) }}
+    <div class="text-inputs">
+        <label for="type">Typ:</label>
+        <input type="text" name="type" id="type" value="{{ request()->query('type') }}" disabled>
+        <p class="hint">
+            Du kan inte ändra det här värdet. Om du vill ändra vilken typ du skapar, gå tillbaka till förra sidan och
+            välj en annan typ.
+        </p>
 
-@if (request()->query('customData', 'off') === "on")
-customData:
-  color: "Red"
-  field: value
-@endif
-</textarea>
+        <label for="itemID">ID:</label>
+        <input type="text" name="itemID" id="itemID" value="{{ $next_item_id }}" disabled>
+        <p class="hint">
+            Det här är bara en förhandsvisning av det inventarienummer som föremålet kommer få; det kan inte ändras
+            manuellt.
+        </p>
+
+        <label for="name">Namn/titel:</label>
+        <input type="text" name="namn" id="namn" placeholder="Gul vas i glas">
+        <p class="hint">Namnet borde vara en lagom kombination av beskrivande och kort.</p>
+
+        <label for="keywords">Nyckelord:</label>
+        <input type="text" name="keywords" id="keywords" placeholder="Penna,Kulspetspenna,1900-tal">
+        <p class="hint">Komma-separera nyckelorden utan mellanrum runt kommatecknen.</i></p>
+    </div>
+
+    <label for="description">Beskrivning av objektet:</label>
+    <textarea name="description" id="description" rows="10" placeholder="Skriv här."></textarea>
+    <p class="hint">Här kan du skriva in mer detaljerad information om objektet.</p>
+
+    <div class="text-inputs item-data">
+        @include('components/parts/ItemData_' . request()->query('type'))
+    </div>
+
     <input type="submit" value="Skapa!">
 </form>
 <div class="keywords">
