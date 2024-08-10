@@ -162,7 +162,6 @@ class HusmusenItem extends Model
 
         // Make sure `keyword` isn't an array already, before splitting it into one.
         $keywords_as_array = is_array($types) ? $keywords : preg_split('/,/', $keywords);
-        // TODO: Validate the keywords.
         $valid_keywords = array_filter($keywords_as_array, function ($keyword) {
             return strlen($keyword) > 0;
         });
