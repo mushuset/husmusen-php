@@ -2,6 +2,13 @@
 
 @section('head')
 <title>{{ $item->name ?? "Error!" }}</title>
+{# TODO: Load locally #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
 @endsection
 
 @section('body')
@@ -42,6 +49,12 @@
     <p>Objektet har utgått!</p>
     <p>{{ $item->expireReason }}</p>
     @endif
+
+    @if(isset($item->itemData['coordinates']))
+    <h2>Karta</h2>
+    <div style="height: 400px; width: 100%" id="map"></div>
+    @endif
+
     <h2>Filer</h2>
     @if(isset($item->files[0]))
     @foreach($item->files as $key => $file)
@@ -67,5 +80,22 @@
     <p>Det finns inga filer för det här föremålet!</p>
     @endif
 </div>
+
+@if(isset($item->itemData['coordinates']))
+<script>
+// TODO: Extract to avoid duplicate code
+let coordinates = "{{ $db_info->museumDetails->coordinates }}".replace(/[^\d\,.-]/g, '').split(/, |,/)
+console.log(coordinates)
+let map = L.map('map').setView(coordinates, 15);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+let marker = L.marker(coordinates).addTo(map);
+</script>
+@endif
+
 @endif
 @endsection
