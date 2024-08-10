@@ -8,7 +8,7 @@
 @section('body')
 <h1>Välkommen till Husmusen!</h1>
 <h2>Vad vill du söka efter idag?</h2>
-@include('components.search_box')
+<x-search_box />
 
 <form action="#" id="get-item-by-id">
     <h2>Hitta föremål efter inventarienummer</h2>
