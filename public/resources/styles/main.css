@@ -65,6 +65,7 @@ nav > a:hover {
 main {
     grid-area: main;
     height: 100%;
+    padding: 5vmin 2vmin;
 }
 
 main > h1,
@@ -85,11 +86,44 @@ h6 {
     margin: 1em 0 .25em 0;
 }
 
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child {
+    margin-top: 0;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.6rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+}
+
+h5 {
+    font-size: 1rem;
+}
+
+h6 {
+    font-size: .8rem;
+}
+
 header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 2rem;
+    margin: 2rem 0;
 }
 
 header img {
@@ -99,7 +133,6 @@ header img {
 
 header h1 {
     font-size: 2rem;
-    margin: auto 2rem;
 }
 
 p + p {
@@ -126,6 +159,7 @@ form {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 2rem 0;
 }
 
 form > label {
@@ -277,11 +311,6 @@ form .hint {
 
 .item.single-view {
     width: min(120ch, 90%);
-}
-
-.item h1 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
 }
 
 .item img {

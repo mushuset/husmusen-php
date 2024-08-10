@@ -30,6 +30,7 @@
     <p>Tillagd: {{ $item->addedAt }}</p>
     <p>Uppdaterad: {{ $item->updatedAt }}</p>
     <table class="item-data">
+        <h2>Gemensam data för objekttyp:</h2>
         @foreach($item->itemData as $field => $value)
         <tr>
             <td>{{ $field }}</td>
@@ -38,6 +39,7 @@
         @endforeach
     </table>
     <table class="custom-data">
+        <h2>Egen data:</h2>
         @foreach($item->customData as $field => $value)
         <tr>
             <td>{{ $field }}</td>
@@ -65,13 +67,11 @@
         <p>Typ av fil: {{ $file->type }}</p>
         @if(preg_match('/^image\/.*$/', $file->type))
         <p>Förhandsvisning:</p>
-        <img src="/api/1.0.0/file/get/{{ $file->fileID }}"
-            alt="{{ $file->description }}">
+        <img src="/api/1.0.0/file/get/{{ $file->fileID }}" alt="{{ $file->description }}">
         @endif
         <p>
             Länkar:
-            <a href="/api/1.0.0/file/get/{{ $file->fileID }}"
-                download>Ladda ned!</a>
+            <a href="/api/1.0.0/file/get/{{ $file->fileID }}" download>Ladda ned!</a>
             <a href="/app/file/{{ $file->fileID }}">Perma-länk.</a>
         </p>
     </div>
