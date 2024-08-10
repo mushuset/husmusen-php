@@ -24,7 +24,7 @@
         </p>
 
         <label for="name">Namn/titel:</label>
-        <input type="text" name="namn" id="namn" placeholder="Gul vas i glas">
+        <input type="text" name="name" id="name" placeholder="Gul vas i glas">
         <p class="hint">Namnet borde vara en lagom kombination av beskrivande och kort.</p>
 
         <label for="keywords">Nyckelord:</label>
