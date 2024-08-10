@@ -15,7 +15,7 @@
     <input type="submit" value="Redigera föremål!">
 </form>
 <div class="keywords">
-    <p style="grid-column: span 3">Nedan ser du alla giltiga nyckelord för dina valda objektstyp. Ogilitiga nyckelord
+    <p style="grid-column: span 3">Nedan ser du alla giltiga nyckelord för dina valda objektstyp. Ogiltiga nyckelord
         kommer filtreras bort automatiskt av systemet.</p>
     <p style="grid-column: span 3">Tips! Du kan söka bland nyckelorden i de flesta webbläsare genom att klicka CTRL + F.
         <br>
