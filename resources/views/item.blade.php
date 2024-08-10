@@ -2,7 +2,7 @@
 
 @section('head')
 <title>{{ $item->name ?? "Error!" }}</title>
-{# TODO: Load locally #}
+{{-- TODO: Load locally --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
@@ -84,7 +84,7 @@
 @if(isset($item->itemData['coordinates']))
 <script>
 // TODO: Extract to avoid duplicate code
-let coordinates = "{{ $db_info->museumDetails->coordinates }}".replace(/[^\d\,.-]/g, '').split(/, |,/)
+let coordinates = "{{ $item->itemData['coordinates'] }}".replace(/[^\d\,.-]/g, '').split(/, |,/)
 console.log(coordinates)
 let map = L.map('map').setView(coordinates, 15);
 
