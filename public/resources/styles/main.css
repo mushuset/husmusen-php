@@ -134,7 +134,8 @@ form > label {
 
 form input,
 form select,
-form textarea {
+form textarea,
+button {
     font-size: .85rem;
     padding: .5rem;
     background-color: var(--input-bg-color);
@@ -182,7 +183,8 @@ form input:read-only {
     cursor: not-allowed;
 }
 
-form input[type="submit"] {
+form input[type="submit"],
+button {
     color: var(--bg-color);
     background-color: var(--accent-color);
     border-color: var(--accent-color);

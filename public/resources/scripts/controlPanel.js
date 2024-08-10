@@ -273,3 +273,23 @@ editKeywordsForm?.addEventListener(
             )
     }
 )
+
+const customDataContainer = document.querySelector("#custom-data")
+const addCustomDataButton = document.querySelector("#add-custom-data")
+addCustomDataButton?.addEventListener(
+    "click",
+    () => {
+        const fieldName = prompt("Vad ska fältet heta? (OBS! Använd inte punker i namnet!)")
+
+        let fieldType
+        while (fieldType !== "number" && fieldType !== "text") {
+            fieldType = prompt("Vilken typ av fält ska det vara? (Måste vara 'number' eller 'text'!)")
+        }
+
+        const label = `<label for="customData.${fieldName}">${fieldName}</label>`
+        const input = `<input type="${fieldType}" name="${fieldName}" id="${fieldName}">`
+
+        customDataContainer.innerHTML += label
+        customDataContainer.innerHTML += input
+    }
+)
