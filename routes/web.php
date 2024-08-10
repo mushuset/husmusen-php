@@ -110,7 +110,7 @@ Route::get('/app/control_panel/new_item', function (Request $request) {
     $next_item_id = HusmusenItem::get_next_item_id();
     $keywords_for_type = HusmusenKeyword::get_all_by_types([HusmusenItemType::from($request->query('type'))]);
 
-    return view('control_panel.new_item', ['next_item_id' => $next_item_id, 'keywords' => $keywords_for_type]);
+    return view('control_panel.new_item', ['next_item_id' => $next_item_id, 'is_editing' => false, 'keywords' => $keywords_for_type]);
 });
 
 Route::get('/app/control_panel/edit_item', function (Request $request) {
