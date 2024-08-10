@@ -44,6 +44,6 @@ class HusmusenError
     {
         $error = new HusmusenError($errorCode, $errorDescription);
 
-        return response_handler($error, $httpStatusCode, request());
+        return response_handler($error, request(), $httpStatusCode);
     }
 }
