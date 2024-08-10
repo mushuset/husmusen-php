@@ -8,44 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Represents all possible item types.
- */
-enum HusmusenItemType: string
-{
-    case ArtPiece = 'ArtPiece';
-    case Blueprint = 'Blueprint';
-    case Book = 'Book';
-    case Building = 'Building';
-    case Collection = 'Collection';
-    case Concept = 'Concept';
-    case CulturalEnvironment = 'CulturalEnvironment';
-    case CulturalHeritage = 'CulturalHeritage';
-    case Document = 'Document';
-    case Exhibition = 'Exhibition';
-    case Film = 'Film';
-    case Group = 'Group';
-    case HistoricalEvent = 'HistoricalEvent';
-    case InteractiveResource = 'InteractiveResource';
-    case Map = 'Map';
-    case Organisation = 'Organisation';
-    case Person = 'Person';
-    case Photo = 'Photo';
-    case PhysicalItem = 'PhysicalItem';
-    case Sketch = 'Sketch';
-    case Sound = 'Sound';
-
-    /**
-     * Gets all types as string representations in an array.
-     *
-     * @return string[]
-     */
-    public static function get_as_strings(): array
-    {
-        return array_map(fn (HusmusenItemType $type) => $type->name, HusmusenItemType::cases());
-    }
-}
-
-/**
  * This class represents an item stored in the database.
  *
  * @property string           $name         A human readable name for the item.
@@ -99,11 +61,12 @@ class HusmusenItem extends Model
 
     /**
      * Valid fields for which a user can sort search results.
+     *
      * @var string[]
      */
-    public static const VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
+    public const VALID_SORT_FIELDS = ['name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'];
 
-        /**
+    /**
      * Creates a `HusmusenItem` object from an array with the same properties as the class.
      */
     public static function from_array_data(array $fromData): HusmusenItem
@@ -157,7 +120,6 @@ class HusmusenItem extends Model
 
     /**
      * Gets what the next ItemID will be. This can be known since the ItemID is an auto-incremented integer.
-     * @return int
      */
     public static function get_next_item_id(): int
     {
@@ -171,12 +133,14 @@ class HusmusenItem extends Model
 
     /**
      * Searches the database for `HusmusenItem`s.
-     * @param string|array $types If not empty, only search for items of specified types, else search for all `HusmusenItemType`s.
-     * @param string|array $freetext Free text search. Searches on name, description, itemData, customData.
-     * @param string|array $keywords Specify keywords to match against.
+     *
+     * @param string|array $types        if not empty, only search for items of specified types, else search for all `HusmusenItemType`s
+     * @param string|array $freetext     Free text search. Searches on name, description, itemData, customData.
+     * @param string|array $keywords     specify keywords to match against
      * @param string|array $keyword_mode Can be 'AND' or 'OR'. In 'AND' mode all keywords must be present to match, in 'OR' mode at least one keyword must be present.
-     * @param string|array $order_by What field to order by. Possible values are: 'name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'
-     * @param string|array $reverse If the results should be in reverse order.
+     * @param string|array $order_by     What field to order by. Possible values are: 'name', 'relevance', 'lastUpdated', 'addedAt', 'itemID'
+     * @param string|array $reverse      if the results should be in reverse order
+     *
      * @return \Illuminate\Http\Response
      */
     public static function search_v1_0_0(string|array $types, string|array $freetext, string|array $keywords, string|array $keyword_mode, string|array $order_by, string|array $reverse)
@@ -211,7 +175,7 @@ class HusmusenItem extends Model
             //                                                    ^- This regex checks if all keywords are provided.
             // Otherwise, use "OR-mode" with this magic RegEx:
             : (sizeof($valid_keywords) > 0 ? "AND keywords RLIKE '(?-i)(?<=,|^)(".join('|', $valid_keywords).')(?=,|$)\'' : ''); //
-            //                                                    ^- This regex checks if at least one keyword is provided.
+        //                                                    ^- This regex checks if at least one keyword is provided.
 
         // Make sure `order_by` is not an array.
         $order_by_as_string = is_array($order_by) ? end($order_by) : $order_by;
