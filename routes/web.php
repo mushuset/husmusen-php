@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\Yaml\Yaml;
 
 require_once __DIR__.'/setup.php';
 
@@ -127,10 +126,7 @@ Route::get('/app/control_panel/edit_item', function (Request $request) {
 
     $keywords_for_type = HusmusenKeyword::get_all_by_types([$item->type]);
 
-    $item = $item->toArray();
-    $item_as_yaml = Yaml::dump($item, 2, 4);
-
-    return view('control_panel.edit_item', ['itemID' => $id, 'itemAsYAML' => $item_as_yaml, 'keywords' => $keywords_for_type]);
+    return view('control_panel.edit_item', ['itemID' => $id, 'is_editing' => true, 'item' => $item, 'keywords' => $keywords_for_type]);
 });
 
 Route::get('/app/control_panel/edit_file', function (Request $request) {

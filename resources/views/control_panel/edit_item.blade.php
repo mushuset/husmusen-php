@@ -8,10 +8,56 @@
 @if(isset($err))
 {{ $err }}
 @else
-<form action="/api/1.0.0/item/edit" method="post" id="edit-item-form">
+<form action="/api/1.0.0/item/edit" method="post" class="auto-rig">
     <h1>Redigera föremål:</h1>
-    <input type="hidden" name="itemID" value="{{ $itemID }}">
-    <textarea name="newItemData" rows="20" class="full-width monospace">{{ $itemAsYAML }}</textarea>
+
+    <div class="text-inputs">
+        <label for="newItemData.type">Typ:</label>
+        <input type="text" name="newItemData.type" id="newItemData.type" value="{{ $item['type'] }}" readonly>
+        <p class="hint">
+            Du kan tyvärr inte redigera ett objekts typ.
+        </p>
+
+        <label for="itemID">ID:</label>
+        <input type="text" name="itemID" id="itemID" value="{{ $item['itemID'] }}" readonly>
+        <p class="hint">Du kan inte ändra ett objekts ID.</p>
+
+        <label for="newItemData.name">Namn/titel:</label>
+        <input type="text" name="newItemData.name" id="newItemData.name" placeholder="Gul vas i glas"
+            value="{{ $item['name'] }}">
+        <p class="hint">Namnet borde vara en lagom kombination av beskrivande och kort.</p>
+
+        <label for="newItemData.keywords">Nyckelord:</label>
+        <input type="text" name="newItemData.keywords" id="newItemData.keywords"
+            placeholder="Penna,Kulspetspenna,1900-tal" value="{{ $item['keywords'] }}">
+        <p class="hint">
+            Komma-separera nyckelorden utan mellanrum runt kommatecknen. Längst ned på sidan ser du alla giltiga
+            nyckelord för dina valda objektstyp. Ogiltiga nyckelord kommer filtreras bort automatiskt av systemet.
+        </p>
+    </div>
+
+    <label for="newItemData.description">Beskrivning av objektet:</label>
+    <textarea name="newItemData.description" id="newItemData.description" rows="10"
+        placeholder="Skriv här.">{{ $item['description'] }}</textarea>
+    <p class="hint">Här kan du skriva in mer detaljerad information om objektet.</p>
+
+    <h2>Beskrivande data för objektet:</h2>
+
+    <div class="text-inputs item-data">
+        @include('components/parts/ItemData_' . $item['type'])
+    </div>
+
+    <h2>Egna fält:</h2>
+    <button id="add-custom-data">Lägg till fält</button>
+    <p class="hint">Här kan du lägga till egna fält med valfritt namn och värde.</p>
+    <div class="text-inputs" id="custom-data">
+        @foreach($item['customData'] as $field => $value)
+        <label for="newItemData.customData.{{ $field }}">{{ $field }}</label>
+        <input type="{{ is_numeric($value) ? 'number' : 'text' }}" name="newItemData.customData.{{ $field }}"
+            id="newItemData.customData.{{ $field }}" value="{{ $value }}">
+        @endforeach
+    </div>
+
     <input type="submit" value="Redigera föremål!">
 </form>
 <div class="keywords">
