@@ -287,7 +287,7 @@ addCustomDataButton?.addEventListener(
         }
 
         const label = `<label for="customData.${fieldName}">${fieldName}</label>`
-        const input = `<input type="${fieldType}" name="${fieldName}" id="${fieldName}">`
+        const input = `<input type="${fieldType}" name="customData.${fieldName}" id="customData.${fieldName}">`
 
         customDataContainer.innerHTML += label
         customDataContainer.innerHTML += input
