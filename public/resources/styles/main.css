@@ -176,7 +176,7 @@ form textarea:active {
 form input:disabled,
 form select:disabled,
 form textarea:disabled,
-form input:read-only {
+form input:read-only:not([type="file"], [type="submit"]) {
     border-color: var(--input-bg-color);
     background-color: var(--standout-color);
     outline: 0 none transparent;
