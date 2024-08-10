@@ -144,11 +144,7 @@ Route::get('/app/control_panel/edit_file', function (Request $request) {
         return view('control_panel.edit_file', ['err' => 'File not found.']);
     }
 
-    $file = $file->toArray();
-
-    $file_as_yaml = Yaml::dump($file, 2, 4);
-
-    return view('control_panel.edit_file', ['fileID' => $id, 'fileAsYAML' => $file_as_yaml]);
+    return view('control_panel.edit_file', ['file' => $file]);
 });
 
 Route::get('/app/control_panel/edit_keywords', function () {

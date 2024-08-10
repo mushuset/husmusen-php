@@ -174,7 +174,8 @@ form textarea:active {
 
 form input:disabled,
 form select:disabled,
-form textarea:disabled {
+form textarea:disabled,
+form input:read-only {
     border-color: var(--input-bg-color);
     background-color: var(--standout-color);
     outline: 0 none transparent;
