@@ -220,9 +220,6 @@ ${newItemData.replace(/^(?!$)/gm, "  ")}`
     }
 )
 
-// FIXME: This looks very much like the above function.
-// It could probably be generalized to have one function for each.
-// ---
 // Handle the edit-file-form:
 const editKeywordsForm = document.querySelector("#edit-keywords-form")
 editKeywordsForm?.addEventListener(
