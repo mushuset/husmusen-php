@@ -157,7 +157,6 @@ Route::get('/app/control_panel/edit_keywords', function () {
 
 Route::get('/app/control_panel/edit_dbinfo', function () {
     $db_info = HusmusenDBInfo::get_db_info();
-    Log::debug(print_r($db_info, true));
 
     return view('control_panel.edit_dbinfo', ['db_info' => $db_info]);
 });
