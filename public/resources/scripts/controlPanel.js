@@ -278,7 +278,9 @@ const customDataContainer = document.querySelector("#custom-data")
 const addCustomDataButton = document.querySelector("#add-custom-data")
 addCustomDataButton?.addEventListener(
     "click",
-    () => {
+    event => {
+        event.preventDefault()
+
         const fieldName = prompt("Vad ska fältet heta? (OBS! Använd inte punker i namnet!)")
 
         let fieldType
