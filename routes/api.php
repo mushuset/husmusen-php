@@ -448,7 +448,7 @@ Route::post('/1.0.0/file/edit/', function (Request $request) {
 
     // TODO: I don't know if this data will be changed or not.
     // Depends on if it is passed by reference or value... (Check!)
-    return response_handler($file_to_update, request());
+    return response_handler($file_to_update, $request);
 })->middleware('auth:user')->middleware('yaml_parser');
 
 Route::post('/1.0.0/file/delete', function (Request $request) {

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
  * This class represents file metadata stored in the database.
  *
  * @property string            $name        Human readable name for the file.
+ * @property string            $description More detailed information about the file.
  * @property string            $type        MIME type of a file. E.g. 'image/png'
  * @property string            $license     License and ownership information.
  * @property \Ramsey\Uuid\Uuid $fileID
@@ -60,6 +61,7 @@ class HusmusenFile extends Model
      *
      * The array needs to provide the following properties:
      * - `name` (`string`)
+     * - `description` (`string`)
      * - `license` (`string`)
      * - `relatedItem` (`int`)
      *
@@ -68,6 +70,7 @@ class HusmusenFile extends Model
     public static function update_from_array_data(HusmusenFile $file, array $fromData): bool
     {
         $file->name = $fromData['name'];
+        $file->description = $fromData['description'];
         $file->license = $fromData['license'];
         $file->relatedItem = $fromData['relatedItem'];
 
