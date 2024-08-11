@@ -56,10 +56,6 @@
             <input class="select-switch" type="radio" name="type" id="exhibition" value="Exhibition">
             <label for="exhibition">Utställning</label>
         </div>
-        <div>
-            <input type="checkbox" name="customData" id="custom-data">
-            <label for="custom-data">Jag vill lägga till egna fält.</label>
-        </div>
         <input type="submit" value="Skapa!">
     </form>
 
