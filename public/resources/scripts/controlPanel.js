@@ -21,7 +21,31 @@ for (const form of forms) {
 
             // Read all keys and values into the `payload` variable.
             let formDataAsObject = {}
-            formData.forEach((value, key) => formDataAsObject[key] = value)
+            formData.forEach(
+                // If there are multiple values with the same name, we want to put them into an array.
+                (value, key) => {
+                    if (Array.isArray(formDataAsObject[key])) {
+                        // If said value in `formDataAsObject` already is an array, push to it,
+                        formDataAsObject[key].push(value)
+                    } else if (formDataAsObject[key] !== undefined) {
+                        // If the value is not undefined (aka it is defined), create an array from the previous and current value.
+                        formDataAsObject[key] = [formDataAsObject[key], value]
+                    } else {
+                        // Else, the key is undefined, and therefore just assign the value to it.
+                        formDataAsObject[key] = value
+                    }
+                }
+            )
+
+            // If a key is an array, and the first instance of an input element with said name has the `data-array-join` attribute,
+            // join it with the value given in said attribute.
+            for (const key of Object.keys(formDataAsObject)) {
+                const inputElement = document.querySelector(`[name="${key}"]`)
+
+                if (inputElement.hasAttribute("data-array-join") && Array.isArray(formDataAsObject[key])) {
+                    formDataAsObject[key] = formDataAsObject[key].join(inputElement.getAttribute("data-array-join"))
+                }
+            }
 
             // Expand keys into objects (if needed)
             const payload = expandKeysToObjects(formDataAsObject)

@@ -28,11 +28,17 @@
         <p class="hint">Namnet borde vara en lagom kombination av beskrivande och kort.</p>
 
         <label for="newItemData.keywords">Nyckelord:</label>
-        <input type="text" name="newItemData.keywords" id="newItemData.keywords"
-            placeholder="Penna,Kulspetspenna,1900-tal" value="{{ $item['keywords'] }}">
+        <select name="newItemData.keywords" id="newItemData.keywords" multiple data-array-join=",">
+            @foreach($keywords as $key => $keyword)
+            <option value="{{ $keyword->word }}" @if (str_contains($item['keywords'], $keyword->word)) selected
+                @endif>
+                {{ $keyword->word }}</option>
+            @endforeach
+        </select>
         <p class="hint">
-            Komma-separera nyckelorden utan mellanrum runt kommatecknen. Längst ned på sidan ser du alla giltiga
-            nyckelord för dina valda objektstyp. Ogiltiga nyckelord kommer filtreras bort automatiskt av systemet.
+            Här kan du välja de nyckelord du vill använda. Längst ned på sidan finner du definitioner av när de olika
+            nyckelorden ska användas. Använd Ctrl (eller Cmd på Mac) för att välja flera nyckelord. (OBS! Om det finns
+            många alternativ, så borde du kunna scrolla i listan!)
         </p>
     </div>
 
