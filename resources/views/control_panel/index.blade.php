@@ -98,15 +98,20 @@
         <div class="text-inputs">
             <label for="name">Namn:</label>
             <input type="text" name="name" id="name">
-            <label for="description">Beskrvning:</label>
-            <input type="text" name="description" id="description">
+
             <label for="license">Licens:</label>
             <input type="text" name="license" id="license">
+
             <label for="related-item">Tillhör föremål:</label>
             <input type="text" name="relatedItem" id="related-item">
         </div>
+
+        <label for="description">Beskrivning:</label>
+        <textarea rows="5" name="description" id="description"></textarea>
+
         <label for="file-data-buffer">Välj din fil här:</label>
         <input type="file" name="fileDataBuffer" id="file-data-buffer">
+
         <input type="submit" value="Skapa!">
     </form>
 
