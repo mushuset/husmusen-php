@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('head')
-<script src="/resources/scripts/controlPanel.js" async defer type="module"></script>
+<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/controlPanel.js" async defer type="module"></script>
 @endsection
 
 @section('body')
 @if(isset($err))
 {{ $err }}
 @else
-<form action="/api/db_info" method="post" class="auto-rig">
+<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/db_info" method="post" class="auto-rig">
     <h1>Redigera databas information:</h1>
 
     <div class="text-inputs">

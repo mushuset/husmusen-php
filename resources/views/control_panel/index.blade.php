@@ -2,14 +2,14 @@
 
 @section('head')
 <title>Husmusen - Kontrollpanel</title>
-<script src="/resources/scripts/controlPanel.js" async defer type="module"></script>
+<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/controlPanel.js" async defer type="module"></script>
 @endsection
 
 @section('body')
 <h1>Välkommen till kontrollpanelen!</h1>
 <section>
     <h1>Föremål</h1>
-    <form action="/app/control_panel/new_item" method="get">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel/new_item" method="get">
         <h2>Skapa nytt föremål</h2>
         <p>Välj den typ av föremål du vill skapa:</p>
         <div class="select-switch-container">
@@ -59,14 +59,14 @@
         <input type="submit" value="Skapa!">
     </form>
 
-    <form action="/app/control_panel/edit_item" method="get">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel/edit_item" method="get">
         <h2>Redigera föremål</h2>
         <label for="item-id">Vilket ID har föremålet du vill redigera?</label>
         <input type="text" name="itemID" id="item-id">
         <input type="submit" value="Redigera!">
     </form>
 
-    <form action="/api/1.0.0/item/mark" method="post" class="auto-rig">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/item/mark" method="post" class="auto-rig">
         <h2>Markera som utgånget</h2>
         <label for="item-id">Vilket ID har föremålet du markera som utgånget?</label>
         <input type="text" id="item-id" name="itemID">
@@ -75,7 +75,7 @@
         <input type="submit" value="Markera som utgånget!">
     </form>
 
-    <form action="/api/1.0.0/item/delete" method="post" class="auto-rig">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/item/delete" method="post" class="auto-rig">
         <h2>Permanent borttagning</h2>
         <label for="item-id">Vilket ID har föremålet du vill ta bort?</label>
         <input type="text" id="item-id" name="itemID">
@@ -85,7 +85,8 @@
 
     <form>
         <h2>Redigera nyckelorden</h2>
-        <a href="/app/control_panel/edit_keywords">Klicka här för att redigera nyckelorden.</a>
+        <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel/edit_keywords">Klicka här för att redigera
+            nyckelorden.</a>
         <p>Endast en admin kan göra det här!</p>
     </form>
 </section>
@@ -93,7 +94,7 @@
 <section>
     <h1>Filer</h1>
 
-    <form action="/api/1.0.0/file/new" method="post" id="file-creation-form">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/file/new" method="post" id="file-creation-form">
         <h2>Skapa ny fil</h2>
         <div class="text-inputs">
             <label for="name">Namn:</label>
@@ -115,14 +116,14 @@
         <input type="submit" value="Skapa!">
     </form>
 
-    <form action="/app/control_panel/edit_file" method="get">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel/edit_file" method="get">
         <h2>Redigera fil</h2>
         <label for="file-id">Vilket ID har filen du vill redigera?</label>
         <input type="text" name="fileID" id="file-id">
         <input type="submit" value="Redigera!">
     </form>
 
-    <form action="/api/1.0.0/file/delete" method="post" class="auto-rig">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/file/delete" method="post" class="auto-rig">
         <h2>Permanent ta bort fil</h2>
         <label for="file-id">Vilket ID har filen du vill ta bort?</label>
         <input type="text" name="fileID" id="file-id">
@@ -133,7 +134,7 @@
 <section>
     <h1>Min användare</h1>
 
-    <form action="/api/auth/change_password" method="post" class="auto-rig">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/auth/change_password" method="post" class="auto-rig">
         <h2>Ändra lösenord</h2>
         <div class="text-inputs">
             <label for="current-password">Nuvarande lösenord:</label>
@@ -153,7 +154,7 @@
 <section>
     <h1>Administrativa funktioner</h1>
 
-    <form action="/api/auth/new" method="post" class="auto-rig">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/auth/new" method="post" class="auto-rig">
         <h2>Skapa användare</h2>
         <div class="text-inputs">
             <label for="usename">Användarnamn:</label>
@@ -169,7 +170,7 @@
         <p>Endast en admin kan göra det här!</p>
     </form>
 
-    <form action="/api/auth/delete" method="post" class="auto-rig">
+    <form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/auth/delete" method="post" class="auto-rig">
         <h2>Ta bort användare</h2>
         <label for="username">Vilken användare vill du ta bort?</label>
         <input type="text" name="username" id="username">
@@ -179,13 +180,14 @@
 
     <form>
         <h2>Se server-loggen</h2>
-        <a href="/app/control_panel/log">Klicka här för att se loggen.</a>
+        <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel/log">Klicka här för att se loggen.</a>
         <p>Endast en admin kan göra det här!</p>
     </form>
 
     <form>
         <h2>Ändra databas- och museuminformation</h2>
-        <a href="/app/control_panel/edit_dbinfo">Klicka här för att ändra databas- och museuminformation.</a>
+        <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel/edit_dbinfo">Klicka här för att ändra databas-
+            och museuminformation.</a>
         <p>Endast en admin kan göra det här!</p>
     </form>
 </section>

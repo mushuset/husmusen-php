@@ -5,7 +5,7 @@ import husmusenOptions from "./husmusenOptions.js"
 const form = document.querySelector("#login-form")
 
 // This will redirect the user to the control panel if they are already logged in.
-checkIfLoggedIn().then(() => window.location.replace("/app/control_panel")).catch()
+checkIfLoggedIn().then(() => window.location.replace(`${husmusenOptions.HUSMUSEN_MOUNT_PATH}/app/control_panel`)).catch()
 
 // Set up the form to work properly.
 form.addEventListener(
@@ -35,7 +35,7 @@ form.addEventListener(
                     console.log(data)
                     localStorage.setItem("api-token", data.token)
                     localStorage.setItem("api-token-valid-until", data.validUntil)
-                    location.assign("/app/control_panel")
+                    location.assign(`${husmusenOptions.HUSMUSEN_MOUNT_PATH}/app/control_panel`)
                 }
             )
             // Catch errors.

@@ -8,7 +8,7 @@
         <input type="search" name="keywords" id="keywords" value="{{ $queries['keywords'] ?? '' }}">
         <p class="hint">
             Komma-separera nyckelorden utan mellanrum runt kommatecknen.
-            <a href="/app/keywords">Här kan du se alla nyckelord!</a>
+            <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/keywords">Här kan du se alla nyckelord!</a>
         </p>
 
         <label for="keyword-mode">Nyckelordsläge:</label>

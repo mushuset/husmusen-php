@@ -1,10 +1,11 @@
 import checkIfLoggedIn from "./checkIfLoggedIn.js"
 import checkSuccess from "./checkSuccess.js"
 import expandKeysToObjects from "./expandKeysToObjects.js"
+import husmusenOptions from "./husmusenOptions.js"
 
 // If the user isn't logged in, redirect them to the login page.
 // TODO: Maybe fix a pop-up instead?
-checkIfLoggedIn().then().catch(() => window.location.replace("/app/login"))
+checkIfLoggedIn().then().catch(() => window.location.replace(`${husmusenOptions.HUSMUSEN_MOUNT_PATH}/app/login`))
 
 // Select all forms that have the `auto-rig` class.
 const forms = document.querySelectorAll("form.auto-rig")
@@ -199,7 +200,7 @@ document.querySelector("#log-out-form")
             event.preventDefault()
             localStorage.removeItem("api-token")
             localStorage.removeItem("api-token-valid-until")
-            window.location.assign("/app")
+            window.location.assign(`${husmusenOptions.HUSMUSEN_MOUNT_PATH}/app`)
         }
     )
 
