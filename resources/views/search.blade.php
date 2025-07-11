@@ -8,7 +8,7 @@
 @section('body')
 <h2>Vad vill du söka efter idag?</h2>
 <h1>Sökning:</h1>
-<x-search_box />
+<x-search_box :queries=$queries />
 
 <h1>Resultat:</h1>
 <div id="search-results">
