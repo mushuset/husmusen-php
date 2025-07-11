@@ -2,7 +2,7 @@
 
 @section('head')
 <title>Husmusen - Sök</title>
-<script src="/resources/scripts/search.js" async defer type="module"></script>
+<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/search.js" async defer type="module"></script>
 @endsection
 
 @section('body')

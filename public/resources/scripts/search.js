@@ -1,4 +1,5 @@
 import checkSuccess from "./checkSuccess.js"
+import husmusenOptions from "./husmusenOptions.js"
 
 // Scroll to the results some small time after  page load:
 setTimeout(() => window.scrollTo(0, 500), 100)
@@ -6,19 +7,19 @@ setTimeout(() => window.scrollTo(0, 500), 100)
 
 const searchParams = (new URL(window.location)).searchParams
 
-const types       = searchParams.getAll("types").join(",") || null
-const freetext    = searchParams.get("freetext")           || null
-const keywords    = searchParams.get("keywords")           || null
-const keywordMode = searchParams.get("keyword_mode")       || null
-const sort        = searchParams.get("sort")               || null
-const reverse     = searchParams.get("reverse")            || null
+const types = searchParams.getAll("types").join(",") || null
+const freetext = searchParams.get("freetext") || null
+const keywords = searchParams.get("keywords") || null
+const keywordMode = searchParams.get("keyword_mode") || null
+const sort = searchParams.get("sort") || null
+const reverse = searchParams.get("reverse") || null
 
 // Clean up the url if there are multiple `types=TYPE`, e.g. `types=Book&types=Document` or if there are empty queries.
 // This would turn `/app/search?freetext=&sort=name&types=Book&types=Document&` into `/app/search?types=Book,Document&sort=name`.
 if (searchParams.getAll("types").length > 1 || window.location.search.match(/((?<=[?&])\w+=&|&$)/))
     window.location.replace(`?${types ? `types=${types}&` : ""}${freetext ? `freetext=${freetext}&` : ""}${keywords ? `keywords=${keywords}&` : ""}${keywordMode ? `keyword_mode=${keywordMode}&` : ""}${sort ? `sort=${sort}&` : ""}${reverse ? `reverse=${reverse}&` : ""}`.replace(/&$/m, ""))
 
-fetch(`/api/1.0.0/item/search${window.location.search}`, { method: "GET" })
+fetch(`${husmusenOptions.HUSMUSEN_MOUNT_PATH}/api/1.0.0/item/search${window.location.search}`, { method: "GET" })
     // Handle the response.
     .then(checkSuccess)
     // Handle the response data.
@@ -36,7 +37,7 @@ fetch(`/api/1.0.0/item/search${window.location.search}`, { method: "GET" })
                             <p>Nyckelord: <span class="keyword">${item.keywords.split(",").join("</span><span class=\"keyword\">")}</span></p>
                             <p>Tillagd: ${(new Date(item.addedAt)).toLocaleString("sv-SE")}</p>
                             <p>Uppdaterad: ${(new Date(item.updatedAt)).toLocaleString("sv-SE")}</p>
-                            <a href="/app/item/${item.itemID}">Läs mer...</a>
+                            <a href="${husmusenOptions.HUSMUSEN_MOUNT_PATH}/app/item/${item.itemID}">Läs mer...</a>
                         </div>
                     `
                 )

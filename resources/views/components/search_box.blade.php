@@ -1,4 +1,4 @@
-<form action="/app/search" method="get">
+<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/search" method="get">
     @csrf
     <div class="text-inputs">
         <label for="freetext">Fritextsökning:</label>

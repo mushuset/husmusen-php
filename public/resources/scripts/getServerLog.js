@@ -1,13 +1,14 @@
 import checkIfLoggedIn from "./checkIfLoggedIn.js"
 import checkSuccess from "./checkSuccess.js"
 import { getColorForName } from "./colors.js"
+import husmusenOptions from "./husmusenOptions.js"
 
 const output = document.querySelector(".log")
 
 checkIfLoggedIn()
     .then(
         () => fetch(
-            "/api/1.0.0/log/get?reverse=true",
+            `${husmusenOptions.HUSMUSEN_MOUNT_PATH}/api/1.0.0/log/get?reverse=true`,
             {
                 method: "GET",
                 headers: {

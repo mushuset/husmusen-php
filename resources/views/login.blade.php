@@ -2,11 +2,11 @@
 
 @section('head')
 <title>Husmusen - Logga in</title>
-<script src="/resources/scripts/login.js" async defer type="module"></script>
+<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/login.js" async defer type="module"></script>
 @endsection
 
 @section('body')
-<form id="login-form" action="/app/control_panel" method="post">
+<form id="login-form" action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/control_panel" method="post">
     <h1>Logga in</h1>
     <p>För att komma åt kontrollpanelen behöver du logga in:</p>
 

@@ -74,7 +74,7 @@ class HusmusenItem extends Model
         $item = new HusmusenItem();
         $item->name = $fromData['name'];
         $item->description = $fromData['description'];
-        $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'], HusmusenItemType::from($fromData['type']));
+        $item->keywords = HusmusenKeyword::make_proper_keywords_string($fromData['keywords'] ?? '', HusmusenItemType::from($fromData['type']));
         $item->type = $fromData['type'];
         $item->itemID = $fromData['itemID'];
         $item->addedAt = $fromData['addedAt'] ?? null;

@@ -1,4 +1,5 @@
 import checkSuccess from "./checkSuccess.js"
+import husmusenOptions from "./husmusenOptions.js"
 
 /**
  * Check if the user is logged in.
@@ -14,7 +15,7 @@ export default function checkIfLoggedIn() {
                 return reject()
 
             fetch(
-                "/api/auth/who",
+                `${husmusenOptions.HUSMUSEN_MOUNT_PATH}/api/auth/who`,
                 {
                     headers: {
                         "Husmusen-Access-Token": localStorage.getItem("api-token")

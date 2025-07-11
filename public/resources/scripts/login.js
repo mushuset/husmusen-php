@@ -1,5 +1,6 @@
 import checkIfLoggedIn from "./checkIfLoggedIn.js"
 import checkSuccess from "./checkSuccess.js"
+import husmusenOptions from "./husmusenOptions.js"
 
 const form = document.querySelector("#login-form")
 
@@ -17,7 +18,7 @@ form.addEventListener(
         const requestPayload = JSON.stringify({ username, password })
 
         fetch(
-            "/api/auth/login",
+            `${husmusenOptions.HUSMUSEN_MOUNT_PATH}/api/auth/login`,
             {
                 body: requestPayload,
                 method: "POST",

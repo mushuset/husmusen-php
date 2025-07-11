@@ -2,7 +2,7 @@
 
 @section('head')
 <title>Husmusen</title>
-<script src="/resources/scripts/getItemById.js" async defer type="module"></script>
+<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/getItemById.js" async defer type="module"></script>
 @endsection
 
 @section('body')
@@ -23,6 +23,6 @@
 <p>
     Det finns en lista på alla föremål som finns i den här databasen. Den är mest tänkt för att sökmotorer ska
     kunna läsa igenom alla föremål och göra dem sökbara på nätet, men om du också vill se den, så finns den <a
-        href="/app/items">här</a>.
+        href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/items">här</a>.
 </p>
 @endsection

@@ -2,7 +2,7 @@
 
 @section('body')
 <header>
-    <img src="/resources/logo.svg" alt="">
+    <img src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/logo.svg" alt="">
     <h1>Vad är Husmusen?</h1>
 </header>
 <p>

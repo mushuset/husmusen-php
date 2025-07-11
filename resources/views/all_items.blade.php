@@ -14,7 +14,8 @@
     @foreach($items as $key => $item)
     <p class="id">{{ $item->itemID }}</p>
     <p class="type">{{ $item->type }}</p>
-    <p class="name">{{ $item->name }} <a href="/app/item/{{ $item->itemID }}">(länk)</a></p>
+    <p class="name">{{ $item->name }} <a
+            href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/item/{{ $item->itemID }}">(länk)</a></p>
     <p class="description">{{ $item->description }}</p>
     @endforeach
 </div>
