@@ -5,7 +5,6 @@ use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
 use App\Models\HusmusenItemType;
 use App\Models\HusmusenKeyword;
-use App\Models\HusmusenMountPath;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -23,7 +22,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::get('/', function () {
-    return Redirect::to(HusmusenMountPath::get_husmusen_mount_path() . '/app');
+    return Redirect::to('/app');
 });
 
 Route::get('/app', function (Request $request) {
