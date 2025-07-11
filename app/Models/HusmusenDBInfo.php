@@ -44,7 +44,7 @@ class HusmusenDBInfo
     }
 
     /**
-     * Sets (**overwrites!**) the DBInfo. It is stored in `data/db_info.yaml`.
+     * Updates instanceName and museumDetails in the DBInfo. It is stored in `data/db_info.yaml`.
      *
      * @return \stdClass the new DBInfo
      */
@@ -58,5 +58,15 @@ class HusmusenDBInfo
         File::put(base_path('data/db_info.yaml'), Yaml::dump($current_db_info, 2, 4));
 
         return HusmusenDBInfo::get_db_info();
+    }
+
+    /**
+     * Sets (**overwrites!**) the DBInfo. It is stored in `data/db_info.yaml`.
+     *
+     * @return \stdClass the new DBInfo
+     */
+    public static function write_from_array_data(array $db_info)
+    {
+        File::put(base_path('data/db_info.yaml'), Yaml::dump($db_info, 2, 4));
     }
 }

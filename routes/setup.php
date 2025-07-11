@@ -4,6 +4,7 @@ use App\Models\HusmusenDBInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Yaml\Yaml;
 
 const DOTENV_LOCATION = '../.env';
 const DOTENV_READ_ERROR = 'Problem under inläsning av `.env`! (Dubbelkolla att `.env.example` är kopierad till `.env`.)';
@@ -32,7 +33,7 @@ if (env('APP_DEBUG', false)) {
     });
 
     Route::post('/setup/museum-info', function (Request $request) {
-        HusmusenDBInfo::update_from_array_data($request->all());
+        HusmusenDBInfo::write_from_array_data($request->all());
 
         return ALL_GOOD_MESSAGE;
     })->middleware('yaml_parser');
@@ -156,6 +157,10 @@ if (env('APP_DEBUG', false)) {
 
         if (!DB::statement('CREATE FULLTEXT INDEX IF NOT EXISTS idx_customData ON husmusen_items (customData)')) {
             return 'Problem vid skapande av index `idx_customData`.';
+        }
+
+        if (!File::put(base_path('data/keywords.yaml'), Yaml::dump([], 2, 4))) {
+            return 'Problem vid skapande av fil `data/keywords.yaml`.';
         }
 
         return ALL_GOOD_MESSAGE;
