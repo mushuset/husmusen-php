@@ -105,8 +105,7 @@ museumDetails:
         <input type="password" name="password" id="password" placeholder="SuperHemligt,BraLösenord!78">
     </div>
 
-    <p>Du borde få tillbaka ett meddelende som har med <code
-            style="font-family: monospace; font-size: 1.2em; color: aqua; background-color: black; padding: 3px 6px;">"isAdmin": true</code>
+    <p>Du borde få tillbaka ett meddelende som har med <code>"isAdmin": true</code>
         mot
         slutet.</p>
 
