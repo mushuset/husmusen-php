@@ -31,7 +31,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('api')
-                ->prefix(HusmusenMountPath::get_husmusen_mount_path().'api')
+                ->prefix(HusmusenMountPath::get_husmusen_mount_path().'/api')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
