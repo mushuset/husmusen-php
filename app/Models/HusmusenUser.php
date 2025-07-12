@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 function get_jwt_key()
 {
-    return env('APP_KEY');
+    return config('app.key');
 }
 
 /**
@@ -48,8 +48,8 @@ class HusmusenUser extends Model
     public static function get_token(HusmusenUser $user, int $valid_until): string
     {
         $payload = [
-            'iss' => env('APP_URL'),
-            'aud' => env('APP_URL'),
+            'iss' => config('app.url'),
+            'aud' => config('app.url'),
             'iat' => time(),
             'nbf' => time(),
             'exp' => $valid_until,

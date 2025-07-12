@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('head')
-<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/controlPanel.js" async defer type="module"></script>
+<script src="{{ config('husmusen.mount_path') }}/resources/scripts/controlPanel.js" async defer type="module"></script>
 @endsection
 
 @section('body')
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/item/new" method="post" class="auto-rig">
+<form action="{{ config('husmusen.mount_path') }}/api/1.0.0/item/new" method="post" class="auto-rig">
     <h1>Skapa nytt objekt:</h1>
 
     <div class="text-inputs">

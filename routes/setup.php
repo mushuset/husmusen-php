@@ -11,7 +11,7 @@ const DOTENV_READ_ERROR = 'Problem under inläsning av `.env`! (Dubbelkolla att 
 const DOTENV_WRITE_ERROR = 'Problem under skrivning av `.env` file! (Dubbelkolla att filrättigheter (file permissions) är korrekt inställda på din server.)';
 const ALL_GOOD_MESSAGE = 'Allt ska ha gått bra!';
 
-if (env('APP_DEBUG', false)) {
+if (config('app.debug')) {
     Route::get('/setup', function () { return view('setup'); });
 
     Route::post('/setup/instance-info', function (Request $request) {

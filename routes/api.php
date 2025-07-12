@@ -272,7 +272,7 @@ Route::post('/auth/change_password', function (Request $request) {
     return response_handler(['username' => $who->username, 'password' => $new_password], request());
 })->middleware('auth:user');
 
-if (env('APP_DEBUG', false)) {
+if (config('app.debug')) {
     Route::post('/auth/debug_admin_creation', function (Request $request) {
         $username = $request->input('username');
         $password = $request->input('password');

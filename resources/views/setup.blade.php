@@ -14,7 +14,7 @@
 
 <h2>Steg 1: Information om er instans</h2>
 <p>Fyll i formuläret nedan och klicka sedan på knappen för att spara.</p>
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/setup/instance-info" method="post" class="auto-rig">
+<form action="{{ config('husmusen.mount_path') }}/setup/instance-info" method="post" class="auto-rig">
     <div class="text-inputs">
         <label for="APP_NAME">Instansens namn:</label>
         <input type="text" name="APP_NAME" id="APP_NAME" placeholder="Husmusen på Museet">
@@ -32,7 +32,7 @@
     Ändra informationen nedan så den passar ert museum och klicka sedan på knappen för att spara. Se till att bara ändra
     det som står mellan citat-tecknena!
 </p>
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/setup/museum-info" method="post" class="auto-rig" data-is-yaml>
+<form action="{{ config('husmusen.mount_path') }}/setup/museum-info" method="post" class="auto-rig" data-is-yaml>
     <textarea name="yaml" id="yaml" cols="80" rows="15" style="font-family: monospace">
 # Ändra inget från hit ...
 protocolVersion: "1.0.0"
@@ -60,7 +60,7 @@ museumDetails:
     Fyll i formuläret nedan och klicka sedan på knappen för att spara. Du bör kunna få den här informationen från ditt
     webbhotell eller IT-ansvarig (eller dylikt) på ditt museum.
 </p>
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/setup/db-info" method="post" class="auto-rig">
+<form action="{{ config('husmusen.mount_path') }}/setup/db-info" method="post" class="auto-rig">
     <div class="text-inputs">
         <label for="DB_CONNECTION">Vilken databasmjukvara använder ni?</label>
         <select name="DB_CONNECTION" id="DB_CONNECTION">
@@ -91,13 +91,13 @@ museumDetails:
 
 <h2>Steg 4: Skapa tabeller</h2>
 <p>Klicka på knappen för att skapa de tabeller i databasen som Husmusen behöver.</p>
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/setup/create-tables" method="post" class="auto-rig">
+<form action="{{ config('husmusen.mount_path') }}/setup/create-tables" method="post" class="auto-rig">
     <input type="submit" value="Skapa tabeller!" id="create-tables">
 </form>
 <hr>
 
 <h2>Steg 5: Skapa en administratör</h2>
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/auth/debug_admin_creation" method="post" class="auto-rig">
+<form action="{{ config('husmusen.mount_path') }}/api/auth/debug_admin_creation" method="post" class="auto-rig">
     <div class="text-inputs">
         <label for="username">Användarnamn:</label>
         <input type="text" name="username" id="username" placeholder="Bob">
@@ -122,7 +122,7 @@ museumDetails:
     Efter ni har klickat på knappen borde ni inte längre kunna komma åt den här sidan! Om ni gör det har något gått fel,
     och ni bör testa att klicka på knappen igen. Funkar inte det, så börja om er installationsprocess helt från början.
 </p>
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/setup/done" method="post" class="auto-rig">
+<form action="{{ config('husmusen.mount_path') }}/setup/done" method="post" class="auto-rig">
     <input type="submit" value="Jag är klar!">
 </form>
 <hr style="margin-bottom: 30vmin">

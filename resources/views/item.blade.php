@@ -65,14 +65,14 @@
         <p>Typ av fil: {{ $file->type }}</p>
         @if(preg_match('/^image\/.*$/', $file->type))
         <p>Förhandsvisning:</p>
-        <img src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/file/get/{{ $file->fileID }}"
+        <img src="{{ config('husmusen.mount_path') }}/api/1.0.0/file/get/{{ $file->fileID }}"
             alt="{{ $file->description }}">
         @endif
         <p>
             Länkar:
-            <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/api/1.0.0/file/get/{{ $file->fileID }}"
+            <a href="{{ config('husmusen.mount_path') }}/api/1.0.0/file/get/{{ $file->fileID }}"
                 download="{{ $file->name }}">Ladda ned!</a>
-            <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/file/{{ $file->fileID }}">Perma-länk.</a>
+            <a href="{{ config('husmusen.mount_path') }}/app/file/{{ $file->fileID }}">Perma-länk.</a>
         </p>
     </div>
     @endforeach

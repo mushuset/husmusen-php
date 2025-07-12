@@ -2,7 +2,7 @@
 
 @section('head')
 <title>Husmusen - Log</title>
-<script src="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/resources/scripts/getServerLog.js" async defer type="module"></script>
+<script src="{{ config('husmusen.mount_path') }}/resources/scripts/getServerLog.js" async defer type="module"></script>
 @endsection
 
 @section('body')

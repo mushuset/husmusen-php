@@ -1,4 +1,4 @@
-<form action="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/search" method="get">
+<form action="{{ config('husmusen.mount_path') }}/app/search" method="get">
     @csrf
     <div class="text-inputs">
         <label for="freetext">Fritextsökning:</label>
@@ -8,7 +8,7 @@
         <input type="search" name="keywords" id="keywords" value="{{ $queries['keywords'] ?? '' }}">
         <p class="hint">
             Komma-separera nyckelorden utan mellanrum runt kommatecknen.
-            <a href="{{ env('HUSMUSEN_MOUNT_PATH', '') }}/app/keywords">Här kan du se alla nyckelord!</a>
+            <a href="{{ config('husmusen.mount_path') }}/app/keywords">Här kan du se alla nyckelord!</a>
         </p>
 
         <label for="keyword-mode">Nyckelordsläge:</label>

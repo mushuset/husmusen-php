@@ -5,7 +5,6 @@ use App\Models\HusmusenFile;
 use App\Models\HusmusenItem;
 use App\Models\HusmusenItemType;
 use App\Models\HusmusenKeyword;
-use App\Models\HusmusenMountPath;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -22,8 +21,12 @@ use Illuminate\Support\Facades\Route;
  * |
  */
 
+/*
+ * All routes containing the UI in Husmusen are prefixed with `/app`.
+ * If someone tries to access the root route, they will be redirected to `/app`.
+ */
 Route::get('/', function () {
-    return Redirect::to(HusmusenMountPath::get_husmusen_mount_path().'/app');
+    return Redirect::to(config('husmusen.mount_path').'/app');
 });
 
 Route::get('/app', function (Request $request) {
@@ -58,10 +61,6 @@ Route::get('/app/item/{id}', function (string $id) {
     if (!$item) {
         return view('item', ['err' => 'Item not found!']);
     }
-
-    // Convert the JSON data into associative arrays.
-    // $item->itemData = json_decode($item->itemData);
-    // $item->customData = json_decode($item->customData);
 
     return view('item', ['item' => $item]);
 });

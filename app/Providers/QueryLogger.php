@@ -21,7 +21,7 @@ class QueryLogger extends ServiceProvider
      */
     public function boot(): void
     {
-        if (env('APP_DEBUG', false)) {
+        if (config('app.debug')) {
             DB::listen(function (QueryExecuted $query) {
                 Log::debug("\nRan query:");
                 Log::debug($query->sql);
