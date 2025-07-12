@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\HusmusenMountPath;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -30,13 +31,15 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('api')
-                ->prefix('api')
+                ->prefix(HusmusenMountPath::get_husmusen_mount_path().'api')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
+                ->prefix(HusmusenMountPath::get_husmusen_mount_path())
                 ->group(base_path('routes/web.php'));
 
             Route::middleware('web')
+                ->prefix(HusmusenMountPath::get_husmusen_mount_path())
                 ->group(base_path('routes/setup.php'));
         });
     }
