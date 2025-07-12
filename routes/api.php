@@ -158,10 +158,10 @@ Route::post('/auth/login', function (Request $request) {
 
     HusmusenLog::write('Auth', sprintf("%s '%s' logged in!", ($user->isAdmin) ? 'Admin' : 'User', $user->username));
 
-    return response()->json([
+    return response_handler([
         'token' => $token,
         'validUntil' => date('c', $valid_until),  // Format date as per ISO 8601.
-    ]);
+    ], $request);
 });
 
 Route::post('/auth/who', function (Request $request) {
@@ -205,7 +205,7 @@ Route::post('/auth/new', function (Request $request) {
         )
     );
 
-    return response_handler(response()->json($user), request());
+    return response_handler($user, request());
 })->middleware('auth:admin');
 
 Route::post('/auth/delete', function (Request $request) {
@@ -521,7 +521,7 @@ Route::post('/1.0.0/keyword', function (Request $request) {
 Route::get('/1.0.0/log/get', function (Request $request) {
     $reverse = $request->query('reverse', 'on');
     if (in_array($reverse, ['on', '1', 'true'])) {
-        return response()->json(HusmusenLog::orderByDesc('timestamp')->get());
+        return response_handler(HusmusenLog::orderByDesc('timestamp')->get(), request());
     }
 
     return response_handler(HusmusenLog::orderBy('timestamp')->get(), request());
