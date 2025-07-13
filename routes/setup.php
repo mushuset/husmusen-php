@@ -66,7 +66,7 @@ if (config('app.debug')) {
         if (!DB::statement(<<<END
             CREATE TABLE IF NOT EXISTS husmusen_items (
                 itemID        INTEGER      PRIMARY KEY,
-                name          VARCHAR(128) NOT NULL,
+                name          TEXT         NOT NULL,
                 keywords      TEXT         DEFAULT '',
                 description   TEXT         DEFAULT '',
                 type          ENUM(
@@ -117,7 +117,7 @@ if (config('app.debug')) {
 
         if (!DB::statement(<<<END
             CREATE TABLE IF NOT EXISTS husmusen_files (
-                name        VARCHAR(128) NOT NULL,
+                name        TEXT         NOT NULL,
                 description TEXT         DEFAULT '',
                 type        VARCHAR(128) NOT NULL,
                 license     VARCHAR(128) DEFAULT 'All rights reserved',
